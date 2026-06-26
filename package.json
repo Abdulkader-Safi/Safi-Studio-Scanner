@@ -1,0 +1,30 @@
+{
+  "name": "safi-studio-scanner",
+  "version": "0.1.0",
+  "description": "Terminal website audit tool. Crawls pages and reports SEO, content, links, images, structured data, security, and crawlability issues.",
+  "type": "module",
+  "bin": {
+    "scanner": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "node --test --import tsx test/"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
