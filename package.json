@@ -2,6 +2,11 @@
   "name": "safi-studio-scanner",
   "version": "0.1.0",
   "description": "Terminal website audit tool. Crawls pages and reports SEO, content, links, images, structured data, security, and crawlability issues.",
+  "author": {
+    "name": "Abdulkader Safi",
+    "url": "https://safi-studio.com"
+  },
+  "homepage": "https://safi-studio.com",
   "type": "module",
   "bin": {
     "scanner": "dist/cli.js"
