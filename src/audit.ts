@@ -1,5 +1,6 @@
 import { createPool, createLinkChecker, fetchRobots, fetchSitemap } from "./http.js";
 import { crawl } from "./crawl.js";
+import { renderPages } from "./browser.js";
 import { runPage, aggregate } from "./runner.js";
 import { allRules, selectRules } from "./rules/index.js";
 import type { AuditOptions, AuditReport, SiteContext } from "./types.js";
@@ -11,6 +12,7 @@ export const DEFAULTS: AuditOptions = {
   maxPages: 20,
   concurrency: 5,
   maxDepth: 3,
+  browser: false,
 };
 
 export async function audit(
@@ -27,6 +29,15 @@ export async function audit(
   const site: SiteContext = { origin, startUrl, robots, sitemap };
 
   const pages = await crawl(startUrl, opts, pool);
+
+  if (opts.browser) {
+    const rendered = await renderPages(
+      pages.map((p) => p.finalUrl),
+      opts,
+    );
+    for (const p of pages) p.browser = rendered.get(p.finalUrl);
+  }
+
   const rules = selectRules(allRules, opts.only, opts.skip);
   const reports = await Promise.all(pages.map((p) => runPage(p, site, rules, checkUrl)));
   return aggregate(startUrl, new Date().toISOString(), reports);

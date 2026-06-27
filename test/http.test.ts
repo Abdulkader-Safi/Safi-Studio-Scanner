@@ -10,6 +10,7 @@ const OPTS: AuditOptions = {
   maxPages: 5,
   concurrency: 5,
   maxDepth: 2,
+  browser: false,
 };
 
 test("pool never runs more than the limit at once", async () => {

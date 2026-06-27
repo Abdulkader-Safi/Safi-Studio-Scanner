@@ -15,6 +15,8 @@ Options:
   --max-pages <n>           Max pages to crawl (default: 20)
   --concurrency <n>         Pages fetched at once (default: 5)
   --depth <n>               Max crawl depth (default: 3)
+  --browser                 Render pages in headless Chromium to run
+                            accessibility (axe-core) and performance rules
   --timeout <ms>            Per-request timeout (default: 15000)
   --user-agent <string>     Override the request user agent
   --help                    Show this help`;
@@ -30,6 +32,7 @@ async function main() {
       "max-pages": { type: "string" },
       concurrency: { type: "string" },
       depth: { type: "string" },
+      browser: { type: "boolean" },
       timeout: { type: "string" },
       "user-agent": { type: "string" },
       help: { type: "boolean" },
@@ -55,6 +58,7 @@ async function main() {
     maxPages: values["max-pages"] ? Number(values["max-pages"]) : DEFAULTS.maxPages,
     concurrency: values.concurrency ? Number(values.concurrency) : DEFAULTS.concurrency,
     maxDepth: values.depth ? Number(values.depth) : DEFAULTS.maxDepth,
+    browser: Boolean(values.browser),
   });
 
   const output = render(report, format);

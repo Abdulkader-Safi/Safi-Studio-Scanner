@@ -21,7 +21,8 @@ export async function runPage(
   const ctx: RuleContext = { page, site, checkUrl };
   const findings: Finding[] = [];
   for (const rule of rules) {
-    if (rule.requiresBrowser) continue;
+    // Browser rules only run when this page has rendered browser data attached.
+    if (rule.requiresBrowser && !page.browser) continue;
     let results;
     try {
       results = await rule.run(ctx);
@@ -31,11 +32,11 @@ export async function runPage(
     for (const r of results) {
       findings.push({
         ...r,
-        ruleId: rule.id,
+        ruleId: r.ruleId ?? rule.id,
         category: rule.category,
-        severity: rule.severity,
-        title: rule.title,
-        fix: rule.fix,
+        severity: r.severity ?? rule.severity,
+        title: r.title ?? rule.title,
+        fix: r.fix ?? rule.fix,
       });
     }
   }

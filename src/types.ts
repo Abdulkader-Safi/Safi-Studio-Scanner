@@ -14,6 +14,7 @@ export interface AuditOptions {
   maxPages: number;
   concurrency: number;
   maxDepth: number;
+  browser: boolean;
 }
 
 export interface RawResponse {
@@ -44,6 +45,34 @@ export interface PageImage {
   loading: string | null;
 }
 
+export interface AxeViolation {
+  id: string;
+  impact: "minor" | "moderate" | "serious" | "critical" | null;
+  help: string;
+  description: string;
+  helpUrl: string;
+  nodes: number;
+  sample?: string;
+}
+
+export interface PerfMetrics {
+  ttfbMs: number;
+  loadMs: number;
+  lcpMs: number;
+  cls: number;
+  domNodes: number;
+  requests: number;
+  transferBytes: number;
+}
+
+export interface BrowserData {
+  ok: boolean;
+  error?: string;
+  axe: AxeViolation[];
+  axePasses: { id: string; help: string }[];
+  metrics: PerfMetrics | null;
+}
+
 export interface PageContext {
   url: string;
   finalUrl: string;
@@ -58,6 +87,7 @@ export interface PageContext {
   links: PageLink[];
   images: PageImage[];
   error?: string;
+  browser?: BrowserData;
 }
 
 export interface SiteContext {
@@ -91,6 +121,12 @@ export interface RuleResult {
   message: string;
   details?: string;
   evidence?: string;
+  // Optional per-result overrides, used when one rule emits many distinct issues
+  // (e.g. the accessibility rule maps each axe-core violation to its own finding).
+  ruleId?: string;
+  title?: string;
+  fix?: string;
+  severity?: Severity;
 }
 
 export interface Rule {

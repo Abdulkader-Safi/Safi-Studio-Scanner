@@ -35,8 +35,14 @@ function ctxFor(file: string, finalUrl: string, headers: Record<string, string> 
 }
 
 test("registry has the expected rule count and unique ids", () => {
-  assert.equal(allRules.length, 46);
-  assert.equal(new Set(allRules.map((r) => r.id)).size, 46);
+  assert.equal(allRules.length, 53);
+  assert.equal(new Set(allRules.map((r) => r.id)).size, 53);
+});
+
+test("static run skips browser rules when no rendered data is attached", async () => {
+  const report = await runPage(ctxFor("good.html", "https://example.com/good"), site, allRules, okCheck);
+  assert.ok(!report.findings.some((f) => f.category === "accessibility"));
+  assert.ok(!report.findings.some((f) => f.category === "performance"));
 });
 
 test("good fixture scores high with link checks passing", async () => {

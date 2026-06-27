@@ -6,6 +6,8 @@ import { imagesRules } from "./images.js";
 import { structuredDataRules } from "./structured-data.js";
 import { securityRules } from "./security.js";
 import { crawlabilityRules } from "./crawlability.js";
+import { accessibilityRules } from "./accessibility.js";
+import { performanceRules } from "./performance.js";
 
 export const allRules: Rule[] = [
   ...coreSeoRules,
@@ -15,6 +17,8 @@ export const allRules: Rule[] = [
   ...structuredDataRules,
   ...securityRules,
   ...crawlabilityRules,
+  ...accessibilityRules,
+  ...performanceRules,
 ];
 
 export function selectRules(rules: Rule[], only?: string[], skip?: string[]): Rule[] {
