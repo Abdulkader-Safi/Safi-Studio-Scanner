@@ -16,6 +16,11 @@ The first version ships 46 static rules across seven categories:
 - **Security** — HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, mixed content
 - **Crawlability** — robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag
 
+With `--browser`, it also renders each page in headless Chromium and adds:
+
+- **Accessibility** — full axe-core WCAG audit, one row per check
+- **Performance** — Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count
+
 See [`features.md`](./features.md) for the full rule list and the roadmap toward all 245 rules.
 
 ## Install
@@ -25,7 +30,11 @@ npm install
 npm run build
 ```
 
-Node 18 or newer is required.
+Node 18 or newer is required. To use `--browser` mode, also download Chromium once:
+
+```bash
+npx playwright install chromium
+```
 
 ## Usage
 
@@ -44,6 +53,7 @@ Options:
 | `--max-pages <n>` | Max pages to crawl | `20` |
 | `--concurrency <n>` | Pages fetched at once | `5` |
 | `--depth <n>` | Max crawl depth | `3` |
+| `--browser` | Render pages in headless Chromium to run accessibility and performance rules | off |
 | `--timeout <ms>` | Per-request timeout | `15000` |
 | `--user-agent <string>` | Override the request user agent | scanner default |
 
@@ -53,6 +63,7 @@ Examples:
 scanner audit https://example.com --format html --out report.html
 scanner audit https://example.com --max-pages 50 --concurrency 5 --format json
 scanner audit https://example.com --max-pages 1 --only core-seo,security --format md
+scanner audit https://example.com --browser --format html --out report.html
 ```
 
 During development you can run it without building:

@@ -3,6 +3,7 @@
 This is the feature backlog. It lists what ships in the first version, then the full rule catalog we grow into. Status legend:
 
 - `[v0.1]` ships in the first build
+- `[shipped]` built and available now (includes browser mode)
 - `[later]` planned, behind the rule registry
 - `[browser]` needs the headless browser stage (a later version)
 
@@ -16,9 +17,10 @@ This is the feature backlog. It lists what ships in the first version, then the 
 - `[v0.1]` Health score out of 100, overall and per category.
 - `[v0.1]` Pluggable rule registry: add a rule with one file and one import.
 - `[v0.1]` Library entry point `audit(url, options)` so the engine can be imported.
+- `[shipped]` Multi-page concurrent crawl (`--max-pages`, `--concurrency`, `--depth`).
+- `[shipped]` Headless browser stage via `--browser` (Playwright + axe-core + Core Web Vitals).
 - `[later]` SDK packaging with a stable public API.
-- `[later]` Headless browser stage for layout and runtime rules.
-- `[later]` Multi-page crawl from sitemap and internal links.
+- `[later]` Multi-page crawl from the sitemap directly.
 - `[later]` CI-friendly exit codes and score thresholds (`--fail-under`).
 
 ## Output formats
@@ -131,8 +133,8 @@ The squirrelscan reference covers 245 rules across 22 categories. Below is the t
 - `[later]` Site integrity (6) — injected pages, phishing kits, malware, SEO spam, obfuscated scripts
 - `[later]` Blocking (3) — ad-blocker impact, privacy filter matches
 - `[later]` Gap analysis (2) — keyword and content gaps from live search data (opt-in)
-- `[browser]` Performance (26) — Core Web Vitals, font loading, render-blocking, DOM size, compression, caching, HTTP/2
-- `[browser]` Accessibility (59) — ARIA validation, color contrast, focus management, landmarks, heading order, form labels, semantic HTML
+- `[shipped]` Performance — Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count via `--browser`. Font loading, render-blocking, caching, HTTP/2 still to add.
+- `[shipped]` Accessibility — full axe-core WCAG audit via `--browser`, one finding per check. Covers the ARIA, contrast, landmark, heading-order, and form-label rules.
 - `[browser]` Mobile (6) — viewport behavior, tap target size, font sizing, interstitials
 
 ### Sequencing
