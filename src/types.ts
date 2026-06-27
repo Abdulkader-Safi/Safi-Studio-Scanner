@@ -99,6 +99,7 @@ export interface Rule {
   title: string;
   severity: Severity;
   requiresBrowser?: boolean;
+  fix?: string;
   run(ctx: RuleContext): RuleResult[] | Promise<RuleResult[]>;
 }
 
@@ -107,6 +108,7 @@ export interface Finding extends RuleResult {
   category: string;
   severity: Severity;
   title: string;
+  fix?: string;
 }
 
 export interface PageReport {

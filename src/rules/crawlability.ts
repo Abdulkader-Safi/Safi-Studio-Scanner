@@ -6,6 +6,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "robots.txt exists",
     severity: "warning",
+    fix: "Add a robots.txt at the site root to guide crawlers.",
     run({ site }) {
       return [
         site.robots.exists
@@ -19,6 +20,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "robots.txt valid",
     severity: "info",
+    fix: "Add valid directives (User-agent, Disallow, Allow, Sitemap) to robots.txt.",
     run({ site }) {
       if (!site.robots.exists) return [{ status: "pass", message: "No robots.txt to validate" }];
       const ok = /(user-agent:|disallow:|allow:|sitemap:)/i.test(site.robots.content);
@@ -34,6 +36,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "Sitemap present",
     severity: "warning",
+    fix: "Publish an XML sitemap and reference it from robots.txt.",
     run({ site }) {
       return [
         site.sitemap.exists
@@ -47,6 +50,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "Page indexable",
     severity: "error",
+    fix: "Remove noindex from the page meta or its X-Robots-Tag header if it should be indexed.",
     run({ page }) {
       const robotsMeta = (page.$('meta[name="robots"]').attr("content") || "").toLowerCase();
       const xRobots = (page.headers["x-robots-tag"] || "").toLowerCase();
@@ -63,6 +67,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "Canonical valid",
     severity: "warning",
+    fix: "Use an absolute, valid URL in the canonical link.",
     run({ page }) {
       const c = page.$('link[rel="canonical"]').attr("href")?.trim();
       if (!c) return [{ status: "warn", message: "No canonical to validate" }];
@@ -79,6 +84,7 @@ export const crawlabilityRules: Rule[] = [
     category: "crawlability",
     title: "X-Robots-Tag header",
     severity: "info",
+    fix: "Remove noindex or nofollow from the X-Robots-Tag header if the page should rank.",
     run({ page }) {
       const x = (page.headers["x-robots-tag"] || "").toLowerCase();
       if (!x) return [{ status: "pass", message: "No restrictive X-Robots-Tag" }];

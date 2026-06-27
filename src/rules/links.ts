@@ -6,6 +6,7 @@ export const linksRules: Rule[] = [
     category: "links",
     title: "Broken internal links",
     severity: "error",
+    fix: "Fix or remove the linked internal URLs that return errors.",
     async run({ page, checkUrl }) {
       const targets = [
         ...new Set(page.links.filter((l) => l.internal && l.absUrl).map((l) => l.absUrl)),
@@ -26,6 +27,7 @@ export const linksRules: Rule[] = [
     category: "links",
     title: "Broken external links",
     severity: "warning",
+    fix: "Update or remove external links that no longer resolve.",
     async run({ page, checkUrl }) {
       const targets = [
         ...new Set(
@@ -48,6 +50,7 @@ export const linksRules: Rule[] = [
     category: "links",
     title: "Redirect chains",
     severity: "warning",
+    fix: "Point the link straight at the final URL so the page loads in one hop.",
     run({ page }) {
       return [
         page.redirectChain > 1
@@ -61,6 +64,7 @@ export const linksRules: Rule[] = [
     category: "links",
     title: "Weak anchor text",
     severity: "info",
+    fix: "Replace generic anchors like 'click here' with text that describes the destination.",
     run({ page }) {
       const weak = /^(click here|read more|here|learn more|more|link|this)$/i;
       const bad = page.links.filter((l) => weak.test(l.text.trim()));
@@ -80,6 +84,7 @@ export const linksRules: Rule[] = [
     category: "links",
     title: "External link rel",
     severity: "info",
+    fix: 'Add rel="noopener" (and noreferrer) to external links, especially those opening new tabs.',
     run({ page }) {
       const missing = page.links.filter(
         (l) =>

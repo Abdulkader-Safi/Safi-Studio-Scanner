@@ -6,6 +6,7 @@ export const structuredDataRules: Rule[] = [
     category: "structured-data",
     title: "JSON-LD present",
     severity: "info",
+    fix: "Add JSON-LD structured data describing the page, e.g. Article, Product, or Organization.",
     run({ page }) {
       const n = page.$('script[type="application/ld+json"]').length;
       return [
@@ -20,6 +21,7 @@ export const structuredDataRules: Rule[] = [
     category: "structured-data",
     title: "JSON-LD parses",
     severity: "warning",
+    fix: "Fix the JSON syntax in the flagged ld+json blocks so they parse cleanly.",
     run({ page }) {
       const blocks = page.$('script[type="application/ld+json"]');
       if (blocks.length === 0) return [{ status: "pass", message: "No JSON-LD to validate" }];
@@ -43,6 +45,7 @@ export const structuredDataRules: Rule[] = [
     category: "structured-data",
     title: "JSON-LD has @type",
     severity: "info",
+    fix: "Include an @type in each JSON-LD block so search engines know what it describes.",
     run({ page }) {
       const blocks = page.$('script[type="application/ld+json"]');
       if (blocks.length === 0) return [{ status: "pass", message: "No JSON-LD" }];
@@ -67,6 +70,7 @@ export const structuredDataRules: Rule[] = [
     category: "structured-data",
     title: "Breadcrumb schema",
     severity: "info",
+    fix: "Add BreadcrumbList structured data to show the page's position in the site.",
     run({ page }) {
       return [
         page.html.includes("BreadcrumbList")
@@ -80,6 +84,7 @@ export const structuredDataRules: Rule[] = [
     category: "structured-data",
     title: "Duplicate JSON-LD types",
     severity: "info",
+    fix: "Merge or remove duplicate schema blocks of the same @type.",
     run({ page }) {
       const types: string[] = [];
       page.$('script[type="application/ld+json"]').each((_, el) => {

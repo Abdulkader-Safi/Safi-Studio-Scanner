@@ -6,6 +6,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Title tag present",
     severity: "error",
+    fix: "Add a unique <title> in <head> that summarises the page in 30 to 60 characters.",
     run({ page }) {
       const t = page.$("title").first().text().trim();
       return [
@@ -20,6 +21,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Title length",
     severity: "warning",
+    fix: "Rewrite the title to sit between 30 and 60 characters so it is not truncated in search results.",
     run({ page }) {
       const t = page.$("title").first().text().trim();
       if (!t) return [{ status: "warn", message: "No title to measure" }];
@@ -35,6 +37,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Meta description present",
     severity: "error",
+    fix: 'Add a <meta name="description"> with a 70 to 160 character summary of the page.',
     run({ page }) {
       const d = page.$('meta[name="description"]').attr("content")?.trim();
       return [
@@ -49,6 +52,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Meta description length",
     severity: "warning",
+    fix: "Trim or expand the meta description to 70 to 160 characters.",
     run({ page }) {
       const d = page.$('meta[name="description"]').attr("content")?.trim() || "";
       if (!d) return [{ status: "warn", message: "No description to measure" }];
@@ -62,6 +66,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Exactly one H1",
     severity: "warning",
+    fix: "Use exactly one <h1> as the page's main heading. Demote the extras to <h2> or below.",
     run({ page }) {
       const n = page.$("h1").length;
       return [
@@ -76,6 +81,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Canonical URL present",
     severity: "warning",
+    fix: 'Add <link rel="canonical" href="..."> pointing to the preferred absolute URL of this page.',
     run({ page }) {
       const c = page.$('link[rel="canonical"]').attr("href")?.trim();
       if (!c) return [{ status: "warn", message: "No canonical link" }];
@@ -92,6 +98,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Charset declared",
     severity: "warning",
+    fix: 'Add <meta charset="utf-8"> as the first tag in <head>.',
     run({ page }) {
       const has =
         page.$("meta[charset]").length > 0 || /charset=/i.test(page.headers["content-type"] || "");
@@ -107,6 +114,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Viewport meta present",
     severity: "warning",
+    fix: 'Add <meta name="viewport" content="width=device-width, initial-scale=1"> for mobile rendering.',
     run({ page }) {
       const v = page.$('meta[name="viewport"]').attr("content");
       return [
@@ -121,6 +129,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Page is indexable",
     severity: "error",
+    fix: "Remove noindex from the robots meta tag if this page should appear in search.",
     run({ page }) {
       const r = (page.$('meta[name="robots"]').attr("content") || "").toLowerCase();
       return [
@@ -135,6 +144,7 @@ export const coreSeoRules: Rule[] = [
     category: "core-seo",
     title: "Open Graph basics",
     severity: "info",
+    fix: "Add og:title, og:description, and og:image meta tags so the page previews well when shared.",
     run({ page }) {
       const missing = ["og:title", "og:description", "og:image"].filter(
         (p) => !page.$(`meta[property="${p}"]`).attr("content"),

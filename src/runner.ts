@@ -35,6 +35,7 @@ export async function runPage(
         category: rule.category,
         severity: rule.severity,
         title: rule.title,
+        fix: rule.fix,
       });
     }
   }

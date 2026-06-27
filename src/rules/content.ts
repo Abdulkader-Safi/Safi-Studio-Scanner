@@ -6,6 +6,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "Heading hierarchy",
     severity: "warning",
+    fix: "Order headings without skipping levels. Do not jump from H2 straight to H4.",
     run({ page }) {
       const levels: number[] = [];
       page.$("h1,h2,h3,h4,h5,h6").each((_, el) => {
@@ -25,6 +26,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "Word count",
     severity: "info",
+    fix: "Add more substantive content. Thin pages rank poorly. Aim for at least 300 meaningful words.",
     run({ page }) {
       const text = page.$("body").text().replace(/\s+/g, " ").trim();
       const words = text ? text.split(" ").length : 0;
@@ -40,6 +42,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "No empty headings",
     severity: "warning",
+    fix: "Remove empty heading tags or give them real text.",
     run({ page }) {
       let empty = 0;
       page.$("h1,h2,h3,h4,h5,h6").each((_, el) => {
@@ -57,6 +60,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "Keyword stuffing",
     severity: "info",
+    fix: "Reduce the repetition of the flagged word and write naturally.",
     run({ page }) {
       const words = page.$("body").text().toLowerCase().match(/[a-z']{4,}/g) || [];
       if (words.length < 100)
@@ -79,6 +83,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "Text to HTML ratio",
     severity: "info",
+    fix: "Increase real text relative to markup, or trim bloated HTML.",
     run({ page }) {
       const text = page.$("body").text().replace(/\s+/g, " ").trim().length;
       const html = page.html.length || 1;
@@ -95,6 +100,7 @@ export const contentRules: Rule[] = [
     category: "content",
     title: "HTML lang attribute",
     severity: "warning",
+    fix: 'Set the language on the root element, e.g. <html lang="en">.',
     run({ page }) {
       const lang = page.$("html").attr("lang");
       return [

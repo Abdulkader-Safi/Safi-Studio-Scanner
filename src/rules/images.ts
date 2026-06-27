@@ -6,6 +6,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Image alt text",
     severity: "error",
+    fix: 'Add descriptive alt text to each image. Use alt="" only for purely decorative images.',
     run({ page }) {
       const missing = page.images.filter((i) => i.alt === null);
       return [
@@ -24,6 +25,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Image dimensions",
     severity: "warning",
+    fix: "Set width and height attributes on images to prevent layout shift.",
     run({ page }) {
       const missing = page.images.filter((i) => !i.width || !i.height);
       return [
@@ -38,6 +40,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Modern image formats",
     severity: "info",
+    fix: "Serve images as WebP or AVIF for smaller files and faster loads.",
     run({ page }) {
       const legacy = page.images.filter((i) => /\.(jpg|jpeg|png|gif)(\?|$)/i.test(i.absUrl));
       return [
@@ -52,6 +55,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Lazy loading",
     severity: "info",
+    fix: 'Add loading="lazy" to images below the fold.',
     run({ page }) {
       if (page.images.length <= 1)
         return [{ status: "pass", message: "Too few images to need lazy loading" }];
@@ -68,6 +72,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Image filenames",
     severity: "info",
+    fix: "Rename images to descriptive, keyword-relevant filenames instead of IMG_1234.jpg.",
     run({ page }) {
       const bad = page.images.filter((i) =>
         /\/(img|image|dsc|screenshot)?[-_]?\d{3,}\.\w+$/i.test(i.absUrl),
@@ -84,6 +89,7 @@ export const imagesRules: Rule[] = [
     category: "images",
     title: "Image src present",
     severity: "warning",
+    fix: "Give every <img> a valid src, or remove the tag.",
     run({ page }) {
       const empty = page.images.filter((i) => !i.src.trim());
       return [

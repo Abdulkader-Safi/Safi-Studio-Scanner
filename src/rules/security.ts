@@ -6,6 +6,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Served over HTTPS",
     severity: "error",
+    fix: "Serve the site over HTTPS and redirect all HTTP traffic to HTTPS.",
     run({ page }) {
       return [
         page.finalUrl.startsWith("https://")
@@ -19,6 +20,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "HSTS header",
     severity: "warning",
+    fix: "Add the Strict-Transport-Security header to enforce HTTPS on future visits.",
     run({ page }) {
       return [
         page.headers["strict-transport-security"]
@@ -32,6 +34,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Content-Security-Policy",
     severity: "warning",
+    fix: "Add a Content-Security-Policy header to limit what scripts and resources can load.",
     run({ page }) {
       return [
         page.headers["content-security-policy"]
@@ -45,6 +48,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Clickjacking protection",
     severity: "warning",
+    fix: "Set X-Frame-Options: DENY or a CSP frame-ancestors directive to block clickjacking.",
     run({ page }) {
       const csp = page.headers["content-security-policy"] || "";
       const ok = page.headers["x-frame-options"] || csp.includes("frame-ancestors");
@@ -60,6 +64,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "X-Content-Type-Options",
     severity: "warning",
+    fix: "Add X-Content-Type-Options: nosniff to stop MIME-type sniffing.",
     run({ page }) {
       return [
         (page.headers["x-content-type-options"] || "").toLowerCase() === "nosniff"
@@ -73,6 +78,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Referrer-Policy",
     severity: "info",
+    fix: "Add a Referrer-Policy header, e.g. strict-origin-when-cross-origin.",
     run({ page }) {
       return [
         page.headers["referrer-policy"]
@@ -86,6 +92,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Mixed content",
     severity: "error",
+    fix: "Load every resource over HTTPS. Replace any http:// references with https://.",
     run({ page }) {
       if (!page.finalUrl.startsWith("https://"))
         return [{ status: "pass", message: "Not HTTPS, mixed content N/A" }];
@@ -103,6 +110,7 @@ export const securityRules: Rule[] = [
     category: "security",
     title: "Permissions-Policy",
     severity: "info",
+    fix: "Add a Permissions-Policy header to restrict powerful browser features the site does not use.",
     run({ page }) {
       return [
         page.headers["permissions-policy"]
