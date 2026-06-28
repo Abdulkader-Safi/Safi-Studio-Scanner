@@ -17,8 +17,8 @@ test("scoreFindings: all error passes is 100, all error fails is 0", () => {
   assert.equal(scoreFindings([f("fail", "error"), f("fail", "error")]), 0);
 });
 
-test("scoreFindings: warn counts as half credit", () => {
-  assert.equal(scoreFindings([f("warn", "error")]), 50);
+test("scoreFindings: warn counts as quarter credit", () => {
+  assert.equal(scoreFindings([f("warn", "error")]), 25);
 });
 
 test("aggregate averages page scores and groups categories", () => {

@@ -10,7 +10,8 @@ import type {
   LinkStatus,
 } from "./types.js";
 
-const SEVERITY_WEIGHT = { error: 5, warning: 3, info: 1 } as const;
+const SEVERITY_WEIGHT = { error: 10, warning: 4, info: 1 } as const;
+const WARN_CREDIT = 0.25;
 
 export async function runPage(
   page: PageContext,
@@ -51,7 +52,7 @@ export function scoreFindings(findings: Finding[]): number {
     const w = SEVERITY_WEIGHT[f.severity];
     possible += w;
     if (f.status === "pass") earned += w;
-    else if (f.status === "warn") earned += w * 0.5;
+    else if (f.status === "warn") earned += w * WARN_CREDIT;
   }
   if (possible === 0) return 100;
   return Math.round((earned / possible) * 100);
@@ -77,8 +78,10 @@ export function aggregate(
       warn: fs.filter((f) => f.status === "warn").length,
     }))
     .sort((a, b) => a.category.localeCompare(b.category));
-  const score = pages.length
-    ? Math.round(pages.reduce((s, p) => s + p.score, 0) / pages.length)
+  // Overall is the mean of category scores, so a weak category pulls the
+  // headline down instead of being diluted by thousands of passing checks.
+  const score = categories.length
+    ? Math.round(categories.reduce((s, c) => s + c.score, 0) / categories.length)
     : 100;
   return { startUrl, generatedAt, pagesScanned: pages.length, score, categories, pages };
 }
