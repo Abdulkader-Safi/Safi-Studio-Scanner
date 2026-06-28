@@ -51,18 +51,18 @@ scanner audit <url> [options]
 
 Options:
 
-| Option | Description | Default |
-| --- | --- | --- |
-| `--format <json\|md\|html>` | Output format | `html` |
-| `--out <path>` | Write the report to a file | stdout |
-| `--only <categories>` | Comma-separated category filter | all |
-| `--skip <categories>` | Categories to skip | none |
-| `--max-pages <n>` | Max pages to crawl | `20` |
-| `--concurrency <n>` | Pages fetched at once | `5` |
-| `--depth <n>` | Max crawl depth | `3` |
-| `--browser` | Render pages in headless Chromium to run accessibility and performance rules | off |
-| `--timeout <ms>` | Per-request timeout | `15000` |
-| `--user-agent <string>` | Override the request user agent | scanner default |
+| Option                      | Description                                                                  | Default         |
+| --------------------------- | ---------------------------------------------------------------------------- | --------------- |
+| `--format <json\|md\|html>` | Output format                                                                | `html`          |
+| `--out <path>`              | Write the report to a file                                                   | stdout          |
+| `--only <categories>`       | Comma-separated category filter                                              | all             |
+| `--skip <categories>`       | Categories to skip                                                           | none            |
+| `--max-pages <n>`           | Max pages to crawl                                                           | `20`            |
+| `--concurrency <n>`         | Pages fetched at once                                                        | `5`             |
+| `--depth <n>`               | Max crawl depth                                                              | `3`             |
+| `--browser`                 | Render pages in headless Chromium to run accessibility and performance rules | off             |
+| `--timeout <ms>`            | Per-request timeout                                                          | `15000`         |
+| `--user-agent <string>`     | Override the request user agent                                              | scanner default |
 
 Examples:
 
@@ -71,6 +71,25 @@ scanner audit https://example.com --format html --out report.html
 scanner audit https://example.com --max-pages 50 --concurrency 5 --format json
 scanner audit https://example.com --max-pages 1 --only core-seo,security --format md
 scanner audit https://example.com --browser --format html --out report.html
+```
+
+Full browser-mode audit exported to each format (run with the built CLI):
+
+```bash
+# HTML
+node dist/cli.js audit https://abdulkadersafi.com --max-pages 50 --concurrency 10 --browser --format html --out report.html
+
+# JSON
+node dist/cli.js audit https://abdulkadersafi.com --max-pages 50 --concurrency 10 --browser --format json --out report.json
+
+# Markdown
+node dist/cli.js audit https://abdulkadersafi.com --max-pages 50 --concurrency 10 --browser --format md --out report.md
+```
+
+Pipe JSON straight into another tool by leaving off `--out`:
+
+```bash
+node dist/cli.js audit https://abdulkadersafi.com --browser --format json | jq '.score'
 ```
 
 During development you can run it without building:
