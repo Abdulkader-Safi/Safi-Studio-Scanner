@@ -2,6 +2,62 @@ import type { Rule } from "../types.js";
 
 export const structuredDataRules: Rule[] = [
   {
+    id: "structured-data/org-or-website",
+    category: "structured-data",
+    title: "Organization or WebSite schema",
+    severity: "warning",
+    fix: "Add Organization or WebSite JSON-LD so search engines understand the site entity and can show a knowledge panel.",
+    run({ page }) {
+      const has = /"@type"\s*:\s*"(Organization|WebSite|LocalBusiness)"/.test(page.html);
+      return [
+        has
+          ? { status: "pass", message: "Organization or WebSite schema present" }
+          : { status: "warn", message: "No Organization or WebSite schema" },
+      ];
+    },
+  },
+  {
+    id: "structured-data/context-declared",
+    category: "structured-data",
+    title: "JSON-LD @context",
+    severity: "info",
+    fix: 'Each JSON-LD block should declare "@context": "https://schema.org".',
+    run({ page }) {
+      const blocks = page.$('script[type="application/ld+json"]');
+      if (blocks.length === 0) return [{ status: "pass", message: "No JSON-LD" }];
+      let missing = 0;
+      blocks.each((_, el) => {
+        try {
+          const d = JSON.parse(page.$(el).contents().text());
+          if (!JSON.stringify(d).includes('"@context"')) missing++;
+        } catch {
+          /* parse handled by jsonld-valid */
+        }
+      });
+      return [
+        missing === 0
+          ? { status: "pass", message: "All JSON-LD blocks declare @context" }
+          : { status: "warn", message: `${missing} JSON-LD block(s) missing @context` },
+      ];
+    },
+  },
+  {
+    id: "structured-data/article-image",
+    category: "structured-data",
+    title: "Article schema has image",
+    severity: "info",
+    fix: "Article and NewsArticle schema should include an image property for rich results.",
+    run({ page }) {
+      if (!/"@type"\s*:\s*"(Article|NewsArticle|BlogPosting)"/.test(page.html))
+        return [{ status: "pass", message: "No article schema" }];
+      return [
+        /"image"\s*:/.test(page.html)
+          ? { status: "pass", message: "Article schema includes image" }
+          : { status: "warn", message: "Article schema missing image" },
+      ];
+    },
+  },
+  {
     id: "structured-data/jsonld-present",
     category: "structured-data",
     title: "JSON-LD present",

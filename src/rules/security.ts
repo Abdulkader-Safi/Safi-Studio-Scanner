@@ -2,6 +2,71 @@ import type { Rule } from "../types.js";
 
 export const securityRules: Rule[] = [
   {
+    id: "security/server-disclosure",
+    category: "security",
+    title: "Server header disclosure",
+    severity: "info",
+    fix: "Remove or genericise the Server header so it does not reveal software and version.",
+    run({ page }) {
+      const s = page.headers["server"] || "";
+      return [
+        s && /\d/.test(s)
+          ? { status: "warn", message: `Server header reveals a version: ${s}`, evidence: s }
+          : { status: "pass", message: "Server header does not leak a version" },
+      ];
+    },
+  },
+  {
+    id: "security/x-powered-by",
+    category: "security",
+    title: "X-Powered-By disclosure",
+    severity: "info",
+    fix: "Remove the X-Powered-By header. It discloses your stack and helps attackers.",
+    run({ page }) {
+      const p = page.headers["x-powered-by"];
+      return [
+        p
+          ? { status: "warn", message: `X-Powered-By exposed: ${p}`, evidence: p }
+          : { status: "pass", message: "No X-Powered-By header" },
+      ];
+    },
+  },
+  {
+    id: "security/cookie-secure",
+    category: "security",
+    title: "Secure cookies",
+    severity: "warning",
+    fix: "Set Secure and HttpOnly on cookies so they are not sent over HTTP or read by scripts.",
+    run({ page }) {
+      const c = page.headers["set-cookie"];
+      if (!c) return [{ status: "pass", message: "No cookies set on this response" }];
+      const lower = c.toLowerCase();
+      const missing = [
+        !lower.includes("secure") && "Secure",
+        !lower.includes("httponly") && "HttpOnly",
+      ].filter(Boolean);
+      return [
+        missing.length === 0
+          ? { status: "pass", message: "Cookies set with Secure and HttpOnly" }
+          : { status: "warn", message: `Cookie missing ${missing.join(" and ")}` },
+      ];
+    },
+  },
+  {
+    id: "security/coop",
+    category: "security",
+    title: "Cross-Origin-Opener-Policy",
+    severity: "info",
+    fix: "Add Cross-Origin-Opener-Policy: same-origin to isolate your browsing context.",
+    run({ page }) {
+      return [
+        page.headers["cross-origin-opener-policy"]
+          ? { status: "pass", message: "COOP set" }
+          : { status: "info", message: "No Cross-Origin-Opener-Policy header" },
+      ];
+    },
+  },
+  {
     id: "security/https",
     category: "security",
     title: "Served over HTTPS",

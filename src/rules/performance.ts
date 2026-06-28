@@ -12,6 +12,71 @@ function withMetrics(
 
 export const performanceRules: Rule[] = [
   {
+    id: "performance/render-blocking-scripts",
+    category: "performance",
+    title: "Render-blocking scripts",
+    severity: "warning",
+    fix: "Add defer or async to scripts in <head>, or move them before </body>, so they do not block rendering.",
+    run({ page }) {
+      let blocking = 0;
+      page.$("head script[src]").each((_, el) => {
+        const s = page.$(el);
+        if (!s.attr("defer") && !s.attr("async") && (s.attr("type") || "") !== "module") blocking++;
+      });
+      return [
+        blocking === 0
+          ? { status: "pass", message: "No render-blocking scripts in head" }
+          : { status: "warn", message: `${blocking} render-blocking script(s) in head` },
+      ];
+    },
+  },
+  {
+    id: "performance/stylesheet-count",
+    category: "performance",
+    title: "Stylesheet count",
+    severity: "info",
+    fix: "Combine stylesheets. Many separate CSS files add round trips. Aim for a handful.",
+    run({ page }) {
+      const n = page.$('link[rel="stylesheet"]').length;
+      return [
+        n <= 5
+          ? { status: "pass", message: `${n} stylesheet(s)` }
+          : { status: "warn", message: `${n} stylesheets` },
+      ];
+    },
+  },
+  {
+    id: "performance/inline-script-size",
+    category: "performance",
+    title: "Inline script size",
+    severity: "info",
+    fix: "Move large inline scripts to cacheable external files.",
+    run({ page }) {
+      let bytes = 0;
+      page.$("script:not([src])").each((_, el) => {
+        bytes += page.$(el).text().length;
+      });
+      return [
+        bytes <= 30000
+          ? { status: "pass", message: `${(bytes / 1000).toFixed(1)}KB inline JS` }
+          : { status: "warn", message: `${(bytes / 1000).toFixed(1)}KB of inline JavaScript` },
+      ];
+    },
+  },
+  {
+    id: "performance/html-weight",
+    category: "performance",
+    title: "HTML document size",
+    severity: "info",
+    fix: "Reduce the raw HTML size. Large documents are slow to parse. Aim under 100KB.",
+    run({ page }) {
+      const kb = page.html.length / 1000;
+      if (kb <= 100) return [{ status: "pass", message: `${kb.toFixed(0)}KB HTML` }];
+      if (kb <= 200) return [{ status: "warn", message: `Large HTML (${kb.toFixed(0)}KB)` }];
+      return [{ status: "fail", message: `Very large HTML (${kb.toFixed(0)}KB)` }];
+    },
+  },
+  {
     id: "performance/lcp",
     category: "performance",
     title: "Largest Contentful Paint",
