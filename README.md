@@ -37,11 +37,16 @@ npm install
 npm run build
 ```
 
-Node 18 or newer is required. To use `--browser` mode, also download Chromium once:
+Node 18 or newer is required. The core install has one dependency (cheerio), so it stays small. The two ways to get accessibility and Core Web Vitals are both optional:
 
-```bash
-npx playwright install chromium
-```
+- **Local browser** (`--browser`): install Playwright and Chromium.
+
+  ```bash
+  npm i playwright @axe-core/playwright
+  npx playwright install chromium
+  ```
+
+- **No browser** (`--psi-key`): use Google PageSpeed Insights. No install, just an API key from the Google Cloud console. It runs Lighthouse on Google's side and returns Core Web Vitals and accessibility over HTTPS. It is rate-limited, so it only runs on the first `--psi-max-pages` pages.
 
 ## Usage
 
@@ -61,6 +66,8 @@ Options:
 | `--concurrency <n>`         | Pages fetched at once                                                        | `5`             |
 | `--depth <n>`               | Max crawl depth                                                              | `3`             |
 | `--browser`                 | Render pages in headless Chromium to run accessibility and performance rules | off             |
+| `--psi-key <key>`           | Use Google PageSpeed Insights for CWV and accessibility (no local browser)   | off             |
+| `--psi-max-pages <n>`       | How many pages to send to PageSpeed Insights                                 | `5`             |
 | `--timeout <ms>`            | Per-request timeout                                                          | `15000`         |
 | `--user-agent <string>`     | Override the request user agent                                              | scanner default |
 
@@ -105,6 +112,26 @@ Every run produces a health score out of 100, overall and per category, plus a l
 - **JSON** for pipelines and CI
 - **Markdown** for pasting into issues and docs
 - **HTML** as one self-contained file with inline styling and color-coded findings
+
+## Use as a library
+
+The engine is exported as an SDK, so you can run audits from your own code without the CLI:
+
+```ts
+import { audit, render } from "safi-studio-scanner";
+
+const report = await audit("https://example.com", {
+  maxPages: 20,
+  concurrency: 5,
+  // browser: true,          // local Chromium (needs playwright installed)
+  // psiKey: process.env.PSI_KEY,  // or PageSpeed Insights, no browser
+});
+
+console.log(report.score); // overall 0-100
+const html = render(report, "html"); // or "md" / "json"
+```
+
+`audit(url, options)` returns the full `AuditReport` object (score, per-category scores, and every finding). All types are exported. The core install pulls only cheerio; `playwright` and `@axe-core/playwright` are optional and loaded lazily, so a project that never uses `browser: true` never pays for Chromium.
 
 ## How it works
 
