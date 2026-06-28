@@ -49,6 +49,14 @@ const CAT_NAMES: Record<string, string> = {
   "structured-data": "Structured data",
   security: "Security",
   crawlability: "Crawlability",
+  "url-structure": "URL structure",
+  "social-media": "Social media",
+  internationalization: "Internationalization",
+  legal: "Legal",
+  analytics: "Analytics",
+  eeat: "E-E-A-T",
+  accessibility: "Accessibility",
+  performance: "Performance",
 };
 const CAT_ORDER = [
   "core-seo",
@@ -58,6 +66,14 @@ const CAT_ORDER = [
   "structured-data",
   "security",
   "crawlability",
+  "url-structure",
+  "social-media",
+  "internationalization",
+  "legal",
+  "analytics",
+  "eeat",
+  "accessibility",
+  "performance",
 ];
 const STATUS_RANK: Record<Status, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
 

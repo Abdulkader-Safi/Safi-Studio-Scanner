@@ -35,18 +35,26 @@ function ctxFor(file: string, finalUrl: string, headers: Record<string, string> 
 }
 
 test("registry has the expected rule count and unique ids", () => {
-  assert.equal(allRules.length, 53);
-  assert.equal(new Set(allRules.map((r) => r.id)).size, 53);
+  assert.equal(allRules.length, 88);
+  assert.equal(new Set(allRules.map((r) => r.id)).size, 88);
 });
 
-test("static run skips browser rules when no rendered data is attached", async () => {
+test("static run skips browser-only rules when no rendered data is attached", async () => {
   const report = await runPage(ctxFor("good.html", "https://example.com/good"), site, allRules, okCheck);
   assert.ok(!report.findings.some((f) => f.category === "accessibility"));
-  assert.ok(!report.findings.some((f) => f.category === "performance"));
+  // Browser-only performance rules (CWV) are skipped; static perf rules still run.
+  assert.ok(!report.findings.some((f) => f.ruleId === "performance/lcp"));
 });
 
-test("good fixture scores high with link checks passing", async () => {
-  const report = await runPage(ctxFor("good.html", "https://example.com/good"), site, allRules, okCheck);
+test("well-formed HTML passes the core static categories", async () => {
+  const core = selectRules(allRules, [
+    "core-seo",
+    "content",
+    "images",
+    "structured-data",
+    "url-structure",
+  ]);
+  const report = await runPage(ctxFor("good.html", "https://example.com/good"), site, core, okCheck);
   assert.ok(report.score >= 90, `score was ${report.score}`);
   const fails = report.findings.filter((f) => f.status === "fail");
   assert.equal(fails.length, 0, `unexpected fails: ${fails.map((f) => f.ruleId).join(", ")}`);
