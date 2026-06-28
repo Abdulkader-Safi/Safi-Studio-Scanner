@@ -1,5 +1,5 @@
 node_modules/
 dist/
 *.log
-report.html
+report*.html
 .claude/settings.local.json
