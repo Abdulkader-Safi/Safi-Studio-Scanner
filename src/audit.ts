@@ -1,6 +1,6 @@
 import { createPool, createLinkChecker, fetchRobots, fetchSitemap } from "./http.js";
 import { crawl } from "./crawl.js";
-import { renderPages } from "./browser.js";
+import { renderPages } from "./providers/playwright.js";
 import { runPage, aggregate } from "./runner.js";
 import { allRules, selectRules } from "./rules/index.js";
 import type { AuditOptions, AuditReport, SiteContext } from "./types.js";

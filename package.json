@@ -8,6 +8,14 @@
   },
   "homepage": "https://safi-studio.com",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "bin": {
     "scanner": "dist/cli.js"
   },
@@ -23,11 +31,16 @@
     "node": ">=18"
   },
   "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "optionalDependencies": {
     "@axe-core/playwright": "^4.12.1",
-    "cheerio": "^1.0.0",
+    "axe-core": "^4.12.1",
+    "jsdom": "^29.1.1",
     "playwright": "^1.61.1"
   },
   "devDependencies": {
+    "@types/jsdom": "^28.0.3",
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"

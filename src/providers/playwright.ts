@@ -1,7 +1,10 @@
-import { chromium, type Browser } from "playwright";
-import { AxeBuilder } from "@axe-core/playwright";
-import { createPool } from "./http.js";
-import type { AuditOptions, BrowserData, AxeViolation, PerfMetrics } from "./types.js";
+import type { Browser } from "playwright";
+import { createPool } from "../http.js";
+import type { AuditOptions, BrowserData, AxeViolation, PerfMetrics } from "../types.js";
+
+// playwright and @axe-core/playwright are optional dependencies. They are
+// imported lazily so the core SDK installs without Chromium. Type-only imports
+// above are erased at build time and never require the package at runtime.
 
 // Records Core Web Vitals before navigation so buffered entries are captured.
 const CWV_INIT = `
@@ -16,7 +19,42 @@ try {
 } catch (e) {}
 `;
 
-async function analyzePage(browser: Browser, url: string, opts: AuditOptions): Promise<BrowserData> {
+type AxeBuilderCtor = new (opts: { page: unknown }) => {
+  analyze(): Promise<{
+    violations: Array<{
+      id: string;
+      impact: string | null;
+      help: string;
+      description: string;
+      helpUrl: string;
+      nodes: Array<{ html: string }>;
+    }>;
+    passes: Array<{ id: string; help: string }>;
+  }>;
+};
+
+async function loadDeps(): Promise<{
+  chromium: typeof import("playwright").chromium;
+  AxeBuilder: AxeBuilderCtor;
+}> {
+  try {
+    const { chromium } = await import("playwright");
+    const { AxeBuilder } = await import("@axe-core/playwright");
+    return { chromium, AxeBuilder: AxeBuilder as unknown as AxeBuilderCtor };
+  } catch {
+    throw new Error(
+      'Browser mode needs the optional "playwright" and "@axe-core/playwright" packages. ' +
+        "Install them with: npm i playwright @axe-core/playwright && npx playwright install chromium",
+    );
+  }
+}
+
+async function analyzePage(
+  browser: Browser,
+  AxeBuilder: AxeBuilderCtor,
+  url: string,
+  opts: AuditOptions,
+): Promise<BrowserData> {
   const context = await browser.newContext({ userAgent: opts.userAgent });
   const page = await context.newPage();
   try {
@@ -25,10 +63,11 @@ async function analyzePage(browser: Browser, url: string, opts: AuditOptions): P
     await page.waitForTimeout(1200); // let LCP and layout shifts settle
 
     const metrics = (await page.evaluate(() => {
-      const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+      const nav = performance.getEntriesByType("navigation")[0] as
+        | PerformanceNavigationTiming
+        | undefined;
       const res = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-      const transfer =
-        res.reduce((s, r) => s + (r.transferSize || 0), 0) + (nav?.transferSize || 0);
+      const transfer = res.reduce((s, r) => s + (r.transferSize || 0), 0) + (nav?.transferSize || 0);
       const cwv = (window as unknown as { __cwv: { lcp: number; cls: number } }).__cwv;
       return {
         ttfbMs: nav ? Math.round(nav.responseStart) : 0,
@@ -47,7 +86,7 @@ async function analyzePage(browser: Browser, url: string, opts: AuditOptions): P
       const results = await new AxeBuilder({ page }).analyze();
       axe = results.violations.map((v) => ({
         id: v.id,
-        impact: v.impact ?? null,
+        impact: (v.impact as AxeViolation["impact"]) ?? null,
         help: v.help,
         description: v.description,
         helpUrl: v.helpUrl,
@@ -71,14 +110,14 @@ export async function renderPages(
   urls: string[],
   opts: AuditOptions,
 ): Promise<Map<string, BrowserData>> {
+  const { chromium, AxeBuilder } = await loadDeps();
   const out = new Map<string, BrowserData>();
   let browser: Browser;
   try {
     browser = await chromium.launch({ headless: true });
   } catch (err) {
-    const msg = (err as Error).message;
     throw new Error(
-      `Could not launch Chromium for --browser mode. Run "npx playwright install chromium" first.\n${msg}`,
+      `Could not launch Chromium. Run "npx playwright install chromium" first.\n${(err as Error).message}`,
     );
   }
   try {
@@ -86,7 +125,7 @@ export async function renderPages(
     await Promise.all(
       urls.map((url) =>
         pool(async () => {
-          out.set(url, await analyzePage(browser, url, opts));
+          out.set(url, await analyzePage(browser, AxeBuilder, url, opts));
         }),
       ),
     );
