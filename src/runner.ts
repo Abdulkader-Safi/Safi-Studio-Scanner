@@ -8,6 +8,8 @@ import type {
   AuditReport,
   CategoryScore,
   LinkStatus,
+  Status,
+  Severity,
 } from "./types.js";
 
 const SEVERITY_WEIGHT = { error: 10, warning: 4, info: 1 } as const;
@@ -78,10 +80,49 @@ export function aggregate(
       warn: fs.filter((f) => f.status === "warn").length,
     }))
     .sort((a, b) => a.category.localeCompare(b.category));
-  // Overall is the mean of category scores, so a weak category pulls the
-  // headline down instead of being diluted by thousands of passing checks.
-  const score = categories.length
-    ? Math.round(categories.reduce((s, c) => s + c.score, 0) / categories.length)
-    : 100;
-  return { startUrl, generatedAt, pagesScanned: pages.length, score, categories, pages };
+  return {
+    startUrl,
+    generatedAt,
+    pagesScanned: pages.length,
+    score: computeOverall(pages),
+    categories,
+    pages,
+  };
+}
+
+// Harsh overall: start at 100 and deduct for every rule that fails or warns,
+// weighted by severity and scaled by the share of pages it affects. Unlike a
+// category average, a handful of real errors across the site visibly drops the
+// headline, the way a strict commercial auditor scores.
+const OVERALL_WEIGHT: Record<Severity, number> = { error: 22, warning: 11, info: 1 };
+const WARN_FACTOR = 0.55;
+
+export function computeOverall(pages: PageReport[]): number {
+  const total = pages.length || 1;
+  const byRule = new Map<string, { severity: Severity; fail: number; warn: number }>();
+  for (const p of pages) {
+    const worst = new Map<string, { status: Status; severity: Severity }>();
+    for (const f of p.findings) {
+      if (f.status === "pass" || f.status === "info") continue;
+      const cur = worst.get(f.ruleId);
+      if (!cur || (cur.status !== "fail" && f.status === "fail")) {
+        worst.set(f.ruleId, { status: f.status, severity: f.severity });
+      }
+    }
+    for (const [ruleId, { status, severity }] of worst) {
+      let e = byRule.get(ruleId);
+      if (!e) {
+        e = { severity, fail: 0, warn: 0 };
+        byRule.set(ruleId, e);
+      }
+      if (status === "fail") e.fail++;
+      else e.warn++;
+    }
+  }
+  let penalty = 0;
+  for (const r of byRule.values()) {
+    const w = OVERALL_WEIGHT[r.severity];
+    penalty += w * (r.fail / total) + w * WARN_FACTOR * (r.warn / total);
+  }
+  return Math.max(0, Math.round(100 - penalty));
 }

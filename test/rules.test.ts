@@ -35,8 +35,8 @@ function ctxFor(file: string, finalUrl: string, headers: Record<string, string> 
 }
 
 test("registry has the expected rule count and unique ids", () => {
-  assert.equal(allRules.length, 88);
-  assert.equal(new Set(allRules.map((r) => r.id)).size, 88);
+  assert.equal(allRules.length, 93);
+  assert.equal(new Set(allRules.map((r) => r.id)).size, 93);
 });
 
 test("static run skips browser-only rules when no rendered data is attached", async () => {

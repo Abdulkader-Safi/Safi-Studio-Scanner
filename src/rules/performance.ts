@@ -64,6 +64,35 @@ export const performanceRules: Rule[] = [
     },
   },
   {
+    id: "performance/text-compression",
+    category: "performance",
+    title: "Text compression",
+    severity: "warning",
+    fix: "Enable gzip or Brotli compression on HTML, CSS, and JS responses to cut transfer size.",
+    run({ page }) {
+      const enc = (page.headers["content-encoding"] || "").toLowerCase();
+      return [
+        /gzip|br|deflate|zstd/.test(enc)
+          ? { status: "pass", message: `Compressed (${enc})` }
+          : { status: "warn", message: "HTML response is not compressed" },
+      ];
+    },
+  },
+  {
+    id: "performance/cache-control",
+    category: "performance",
+    title: "Cache headers",
+    severity: "info",
+    fix: "Send a Cache-Control header so browsers and CDNs can cache responses.",
+    run({ page }) {
+      return [
+        page.headers["cache-control"]
+          ? { status: "pass", message: `Cache-Control: ${page.headers["cache-control"]}` }
+          : { status: "warn", message: "No Cache-Control header" },
+      ];
+    },
+  },
+  {
     id: "performance/html-weight",
     category: "performance",
     title: "HTML document size",
