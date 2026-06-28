@@ -119,18 +119,23 @@ The engine is published as an SDK, so you can run audits from your own code with
 
 ### Install it in another project
 
-It is proprietary, so it is not on the public npm registry. Install it one of these ways:
+It is proprietary, so it is not on the public npm registry. Install it straight from GitHub:
 
 ```bash
-# from a packed tarball (run `npm pack` in this repo first)
-npm install /path/to/safi-studio-scanner-0.1.0.tgz
+# shorthand (HTTPS, works if you can read the repo)
+npm install github:Abdulkader-Safi/Safi-Studio-Scanner
 
-# or straight from git (npm builds it on install)
-npm install git+ssh://git@your-host/safi-studio-scanner.git
+# explicit HTTPS
+npm install git+https://github.com/Abdulkader-Safi/Safi-Studio-Scanner.git
 
-# core only, skip the optional browser packages
-npm install /path/to/safi-studio-scanner-0.1.0.tgz --omit=optional
+# SSH (uses your GitHub SSH key, good for private access)
+npm install git+ssh://git@github.com/Abdulkader-Safi/Safi-Studio-Scanner.git
+
+# pin to a tag or commit
+npm install github:Abdulkader-Safi/Safi-Studio-Scanner#v0.1.0
 ```
+
+npm builds the package on install via the `prepare` hook, so you get the compiled `dist`. To skip the optional browser packages, add `--omit=optional`. You can also `npm pack` in this repo and install the resulting `.tgz` directly.
 
 ### Use the functions
 
