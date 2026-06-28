@@ -15,6 +15,11 @@ export interface AuditOptions {
   concurrency: number;
   maxDepth: number;
   browser: boolean;
+  // Chromium-free provider: Google PageSpeed Insights API. Returns real Core Web
+  // Vitals and accessibility audits over HTTPS, no local browser. Needs an API
+  // key and is rate-limited, so it only runs on the first `psiMaxPages` pages.
+  psiKey?: string;
+  psiMaxPages: number;
 }
 
 export interface RawResponse {

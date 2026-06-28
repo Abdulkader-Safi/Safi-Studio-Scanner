@@ -12,6 +12,7 @@ const OPTS: AuditOptions = {
   maxPages: 10,
   concurrency: 5,
   maxDepth: 2,
+  psiMaxPages: 5,
   browser: false,
 };
 

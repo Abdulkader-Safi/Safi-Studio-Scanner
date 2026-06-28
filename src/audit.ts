@@ -1,6 +1,7 @@
 import { createPool, createLinkChecker, fetchRobots, fetchSitemap } from "./http.js";
 import { crawl } from "./crawl.js";
 import { renderPages } from "./providers/playwright.js";
+import { pageSpeedInsights } from "./providers/psi.js";
 import { runPage, aggregate } from "./runner.js";
 import { allRules, selectRules } from "./rules/index.js";
 import type { AuditOptions, AuditReport, SiteContext } from "./types.js";
@@ -13,6 +14,7 @@ export const DEFAULTS: AuditOptions = {
   concurrency: 5,
   maxDepth: 3,
   browser: false,
+  psiMaxPages: 5,
 };
 
 export async function audit(
@@ -31,11 +33,20 @@ export async function audit(
   const pages = await crawl(startUrl, opts, pool);
 
   if (opts.browser) {
+    // Full local browser: accessibility with contrast plus real Core Web Vitals.
     const rendered = await renderPages(
       pages.map((p) => p.finalUrl),
       opts,
     );
     for (const p of pages) p.browser = rendered.get(p.finalUrl);
+  } else if (opts.psiKey) {
+    // Chromium-free path: Google PageSpeed Insights for CWV and accessibility on
+    // the first psiMaxPages pages.
+    const psi = await pageSpeedInsights(
+      pages.map((p) => p.finalUrl),
+      opts,
+    );
+    for (const p of pages) p.browser = psi.get(p.finalUrl);
   }
 
   const rules = selectRules(allRules, opts.only, opts.skip);

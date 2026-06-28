@@ -17,6 +17,9 @@ Options:
   --depth <n>               Max crawl depth (default: 3)
   --browser                 Render pages in headless Chromium to run
                             accessibility (axe-core) and performance rules
+  --psi-key <key>           Use Google PageSpeed Insights (no local browser) for
+                            Core Web Vitals and accessibility, no Chromium needed
+  --psi-max-pages <n>       How many pages to send to PSI (default: 5)
   --timeout <ms>            Per-request timeout (default: 15000)
   --user-agent <string>     Override the request user agent
   --help                    Show this help`;
@@ -33,6 +36,8 @@ async function main() {
       concurrency: { type: "string" },
       depth: { type: "string" },
       browser: { type: "boolean" },
+      "psi-key": { type: "string" },
+      "psi-max-pages": { type: "string" },
       timeout: { type: "string" },
       "user-agent": { type: "string" },
       help: { type: "boolean" },
@@ -59,6 +64,10 @@ async function main() {
     concurrency: values.concurrency ? Number(values.concurrency) : DEFAULTS.concurrency,
     maxDepth: values.depth ? Number(values.depth) : DEFAULTS.maxDepth,
     browser: Boolean(values.browser),
+    psiKey: values["psi-key"],
+    psiMaxPages: values["psi-max-pages"]
+      ? Number(values["psi-max-pages"])
+      : DEFAULTS.psiMaxPages,
   });
 
   const output = render(report, format);

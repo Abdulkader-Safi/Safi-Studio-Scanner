@@ -4,9 +4,11 @@ function withMetrics(
   page: { browser?: { ok: boolean; metrics: PerfMetrics | null } },
   fn: (m: PerfMetrics) => { status: "pass" | "fail" | "warn" | "info"; message: string },
 ) {
-  const m = page.browser?.metrics;
-  if (!page.browser || !page.browser.ok || !m)
+  if (!page.browser || !page.browser.ok)
     return [{ status: "warn" as const, message: "Page could not be rendered for performance checks" }];
+  const m = page.browser.metrics;
+  // Lite mode (jsdom) has no metrics. Report neutral instead of penalising.
+  if (!m) return [{ status: "info" as const, message: "Not measured (no performance provider)" }];
   return [fn(m)];
 }
 

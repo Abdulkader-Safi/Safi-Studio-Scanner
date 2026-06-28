@@ -1,12 +1,11 @@
-import type { Browser } from "playwright";
 import { createPool } from "../http.js";
 import type { AuditOptions, BrowserData, AxeViolation, PerfMetrics } from "../types.js";
 
-// playwright and @axe-core/playwright are optional dependencies. They are
-// imported lazily so the core SDK installs without Chromium. Type-only imports
-// above are erased at build time and never require the package at runtime.
+// playwright and @axe-core/playwright are optional dependencies, imported lazily
+// so the core SDK installs without Chromium. We type the slice of the Playwright
+// API we use locally, so the build does not depend on Playwright's own types
+// (a consumer may not have it installed).
 
-// Records Core Web Vitals before navigation so buffered entries are captured.
 const CWV_INIT = `
 window.__cwv = { lcp: 0, cls: 0 };
 try {
@@ -19,7 +18,24 @@ try {
 } catch (e) {}
 `;
 
-type AxeBuilderCtor = new (opts: { page: unknown }) => {
+interface PwPage {
+  addInitScript(script: string): Promise<void>;
+  goto(url: string, opts: { waitUntil: string; timeout: number }): Promise<unknown>;
+  waitForTimeout(ms: number): Promise<void>;
+  evaluate<T>(fn: () => T): Promise<T>;
+}
+interface PwContext {
+  newPage(): Promise<PwPage>;
+  close(): Promise<void>;
+}
+interface PwBrowser {
+  newContext(opts: { userAgent: string }): Promise<PwContext>;
+  close(): Promise<void>;
+}
+interface Chromium {
+  launch(opts: { headless: boolean }): Promise<PwBrowser>;
+}
+type AxeBuilderCtor = new (opts: { page: PwPage }) => {
   analyze(): Promise<{
     violations: Array<{
       id: string;
@@ -33,14 +49,11 @@ type AxeBuilderCtor = new (opts: { page: unknown }) => {
   }>;
 };
 
-async function loadDeps(): Promise<{
-  chromium: typeof import("playwright").chromium;
-  AxeBuilder: AxeBuilderCtor;
-}> {
+async function loadDeps(): Promise<{ chromium: Chromium; AxeBuilder: AxeBuilderCtor }> {
   try {
-    const { chromium } = await import("playwright");
-    const { AxeBuilder } = await import("@axe-core/playwright");
-    return { chromium, AxeBuilder: AxeBuilder as unknown as AxeBuilderCtor };
+    const pw = (await import("playwright")) as unknown as { chromium: Chromium };
+    const axe = (await import("@axe-core/playwright")) as unknown as { AxeBuilder: AxeBuilderCtor };
+    return { chromium: pw.chromium, AxeBuilder: axe.AxeBuilder };
   } catch {
     throw new Error(
       'Browser mode needs the optional "playwright" and "@axe-core/playwright" packages. ' +
@@ -50,7 +63,7 @@ async function loadDeps(): Promise<{
 }
 
 async function analyzePage(
-  browser: Browser,
+  browser: PwBrowser,
   AxeBuilder: AxeBuilderCtor,
   url: string,
   opts: AuditOptions,
@@ -62,7 +75,7 @@ async function analyzePage(
     await page.goto(url, { waitUntil: "load", timeout: opts.timeout });
     await page.waitForTimeout(1200); // let LCP and layout shifts settle
 
-    const metrics = (await page.evaluate(() => {
+    const metrics = await page.evaluate<PerfMetrics>(() => {
       const nav = performance.getEntriesByType("navigation")[0] as
         | PerformanceNavigationTiming
         | undefined;
@@ -78,7 +91,7 @@ async function analyzePage(
         requests: res.length + 1,
         transferBytes: transfer,
       };
-    })) as PerfMetrics;
+    });
 
     let axe: AxeViolation[] = [];
     let axePasses: { id: string; help: string }[] = [];
@@ -112,7 +125,7 @@ export async function renderPages(
 ): Promise<Map<string, BrowserData>> {
   const { chromium, AxeBuilder } = await loadDeps();
   const out = new Map<string, BrowserData>();
-  let browser: Browser;
+  let browser: PwBrowser;
   try {
     browser = await chromium.launch({ headless: true });
   } catch (err) {
