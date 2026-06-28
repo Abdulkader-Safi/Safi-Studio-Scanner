@@ -3,3 +3,6 @@ dist/
 *.log
 report*.html
 .claude/settings.local.json
+*.tgz
+report.json
+report.md
