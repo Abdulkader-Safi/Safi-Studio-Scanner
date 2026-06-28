@@ -113,25 +113,45 @@ Every run produces a health score out of 100, overall and per category, plus a l
 - **Markdown** for pasting into issues and docs
 - **HTML** as one self-contained file with inline styling and color-coded findings
 
-## Use as a library
+## Use as a library (SDK)
 
-The engine is exported as an SDK, so you can run audits from your own code without the CLI:
+The engine is published as an SDK, so you can run audits from your own code without the CLI.
+
+### Install it in another project
+
+It is proprietary, so it is not on the public npm registry. Install it one of these ways:
+
+```bash
+# from a packed tarball (run `npm pack` in this repo first)
+npm install /path/to/safi-studio-scanner-0.1.0.tgz
+
+# or straight from git (npm builds it on install)
+npm install git+ssh://git@your-host/safi-studio-scanner.git
+
+# core only, skip the optional browser packages
+npm install /path/to/safi-studio-scanner-0.1.0.tgz --omit=optional
+```
+
+### Use the functions
 
 ```ts
-import { audit, render } from "safi-studio-scanner";
+import { audit, auditToHtml, auditScore } from "safi-studio-scanner";
 
+// Full report object: score, per-category scores, every finding.
 const report = await audit("https://example.com", {
   maxPages: 20,
   concurrency: 5,
-  // browser: true,          // local Chromium (needs playwright installed)
-  // psiKey: process.env.PSI_KEY,  // or PageSpeed Insights, no browser
+  // browser: true,               // local Chromium (needs the optional playwright packages)
+  // psiKey: process.env.PSI_KEY, // or PageSpeed Insights, no local browser
 });
+console.log(report.score);
 
-console.log(report.score); // overall 0-100
-const html = render(report, "html"); // or "md" / "json"
+// One-line helpers.
+const html = await auditToHtml("https://example.com"); // self-contained HTML string
+const score = await auditScore("https://example.com"); // just the 0-100 number
 ```
 
-`audit(url, options)` returns the full `AuditReport` object (score, per-category scores, and every finding). All types are exported. The core install pulls only cheerio; `playwright` and `@axe-core/playwright` are optional and loaded lazily, so a project that never uses `browser: true` never pays for Chromium.
+Exported functions: `audit`, `auditToHtml`, `auditToMarkdown`, `auditScore`, and `render` (for turning a report into any format). `allRules` and `selectRules` are exported too, and every type (`AuditReport`, `Finding`, `Rule`, ...). The package is ESM. The core install pulls only cheerio; `playwright` and `@axe-core/playwright` are optional and lazy-loaded, so a project that never sets `browser: true` never pays for Chromium.
 
 ## How it works
 
