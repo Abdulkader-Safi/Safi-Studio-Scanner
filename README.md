@@ -6,7 +6,7 @@ It is a private take on the closed-source [squirrelscan.com](https://squirrelsca
 
 ## What it checks
 
-It ships 88 rules across 15 categories. The static categories run by default:
+It ships 93 rules across 15 categories. The static categories run by default:
 
 - **Core SEO** — title, meta description, single H1, canonical, charset, viewport, robots meta, Open Graph
 - **Content** — heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language
