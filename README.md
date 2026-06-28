@@ -6,15 +6,22 @@ It is a private take on the closed-source [squirrelscan.com](https://squirrelsca
 
 ## What it checks
 
-The first version ships 46 static rules across seven categories:
+It ships 88 rules across 15 categories. The static categories run by default:
 
-- **Core SEO** — title presence and length, meta description presence and length, single H1, canonical, charset, viewport, robots meta, Open Graph
-- **Content** — heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language attribute
+- **Core SEO** — title, meta description, single H1, canonical, charset, viewport, robots meta, Open Graph
+- **Content** — heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language
 - **Links** — broken internal and external links, redirect chains, weak anchor text, missing rel attributes
-- **Images** — missing alt text, missing dimensions, non-modern formats, lazy loading, filename quality, empty src
-- **Structured data** — JSON-LD presence, valid parse, recognized types, breadcrumb, duplicate types
-- **Security** — HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, mixed content
+- **Images** — missing alt, missing dimensions, non-modern formats, lazy loading, filename quality, empty src
+- **Structured data** — JSON-LD presence and validity, recognized types, Organization/WebSite, breadcrumb, duplicates
+- **Security** — HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, cookies, header disclosure, mixed content
 - **Crawlability** — robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag
+- **URL structure** — lowercase, hyphens not underscores, length, depth, parameters, readable slugs (per Google guidance)
+- **Social media** — Twitter Card, absolute og:image, og:url vs canonical, profile links
+- **Internationalization** — hreflang presence and validity
+- **Legal** — privacy policy, terms, cookie consent, contact
+- **Analytics** — analytics tag present, Google consent mode
+- **E-E-A-T** — author attribution, dates, outbound citations, about page
+- **Performance** — render-blocking scripts, stylesheet count, inline script size, HTML weight
 
 With `--browser`, it also renders each page in headless Chromium and adds:
 
