@@ -2,33 +2,33 @@
 
 A Node.js command-line tool, written in TypeScript, that crawls a site, audits each page against a large set of quality rules, and exports one report as HTML, Markdown, or JSON.
 
-It is a private take on the closed-source [squirrelscan.com](https://squirrelscan.com), which checks a site across 245 rules in 22 categories. The audit logic lives in a library, so the same engine can later ship as an SDK or power a web service without a rewrite.
+It runs 93 checks across 15 categories. The audit logic lives in a library, so the same engine runs from the terminal, imports as an SDK, or can later power a web service without a rewrite.
 
 ## What it checks
 
 It ships 93 rules across 15 categories. The static categories run by default:
 
-- **Core SEO** — title, meta description, single H1, canonical, charset, viewport, robots meta, Open Graph
-- **Content** — heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language
-- **Links** — broken internal and external links, redirect chains, weak anchor text, missing rel attributes
-- **Images** — missing alt, missing dimensions, non-modern formats, lazy loading, filename quality, empty src
-- **Structured data** — JSON-LD presence and validity, recognized types, Organization/WebSite, breadcrumb, duplicates
-- **Security** — HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, cookies, header disclosure, mixed content
-- **Crawlability** — robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag
-- **URL structure** — lowercase, hyphens not underscores, length, depth, parameters, readable slugs (per Google guidance)
-- **Social media** — Twitter Card, absolute og:image, og:url vs canonical, profile links
-- **Internationalization** — hreflang presence and validity
-- **Legal** — privacy policy, terms, cookie consent, contact
-- **Analytics** — analytics tag present, Google consent mode
-- **E-E-A-T** — author attribution, dates, outbound citations, about page
-- **Performance** — render-blocking scripts, stylesheet count, inline script size, HTML weight
+- **Core SEO**: title, meta description, single H1, canonical, charset, viewport, robots meta, Open Graph
+- **Content**: heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language
+- **Links**: broken internal and external links, redirect chains, weak anchor text, missing rel attributes
+- **Images**: missing alt, missing dimensions, non-modern formats, lazy loading, filename quality, empty src
+- **Structured data**: JSON-LD presence and validity, recognized types, Organization/WebSite, breadcrumb, duplicates
+- **Security**: HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, cookies, header disclosure, mixed content
+- **Crawlability**: robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag
+- **URL structure**: lowercase, hyphens not underscores, length, depth, parameters, readable slugs (per Google guidance)
+- **Social media**: Twitter Card, absolute og:image, og:url vs canonical, profile links
+- **Internationalization**: hreflang presence and validity
+- **Legal**: privacy policy, terms, cookie consent, contact
+- **Analytics**: analytics tag present, Google consent mode
+- **E-E-A-T**: author attribution, dates, outbound citations, about page
+- **Performance**: render-blocking scripts, stylesheet count, inline script size, HTML weight
 
 With `--browser`, it also renders each page in headless Chromium and adds:
 
-- **Accessibility** — full axe-core WCAG audit, one row per check
-- **Performance** — Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count
+- **Accessibility**: full axe-core WCAG audit, one row per check
+- **Performance**: Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count
 
-See [`features.md`](./features.md) for the full rule list and the roadmap toward all 245 rules.
+See [`features.md`](./features.md) for the full rule list and the roadmap.
 
 ## Install
 
@@ -176,4 +176,4 @@ Early development. See [`PRD.md`](./PRD.md) for the product spec and [`features.
 
 ## License
 
-Proprietary. All rights reserved by Abdulkader Safi ([safi-studio.com](https://safi-studio.com)). Not licensed for use, copying, or distribution without written permission.
+[PolyForm Noncommercial License 1.0.0](./LICENSE). Free to use, copy, modify, and share for any noncommercial purpose, including personal and hobby projects. Commercial use is not permitted. Copyright Abdulkader Safi ([safi-studio.com](https://safi-studio.com)).

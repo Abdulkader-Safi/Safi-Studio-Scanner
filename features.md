@@ -1,4 +1,4 @@
-# Safi Studio Scanner — features
+# Safi Studio Scanner: features
 
 This is the feature backlog. It lists what ships in the first version, then the full rule catalog we grow into. Status legend:
 
@@ -111,31 +111,31 @@ The squirrelscan reference covers 245 rules across 22 categories. Below is the t
 
 ### Already started above
 
-- Core SEO (13 rules total in reference) — starter covers the essentials
-- Content (14) — starter covers the essentials
-- Links (14) — starter covers the essentials
-- Images (14) — starter covers the essentials
-- Structured Data (10) — starter covers the essentials
-- Security (14) — starter covers the essentials
-- Crawlability (17) — starter covers the essentials
+- Core SEO (13 rules total in reference): starter covers the essentials
+- Content (14): starter covers the essentials
+- Links (14): starter covers the essentials
+- Images (14): starter covers the essentials
+- Structured Data (10): starter covers the essentials
+- Security (14): starter covers the essentials
+- Crawlability (17): starter covers the essentials
 
 ### Planned categories
 
-- `[later]` URL structure (8) — length, keywords in slug, hyphenation, lowercase, special characters
-- `[later]` Social media (4) — Open Graph image sizing, URL matching, social profile links
-- `[later]` Internationalization (2) — language declarations, hreflang correctness
-- `[later]` Legal compliance (4) — privacy policy, cookie consent, terms of service presence
-- `[later]` Local SEO (3) — NAP consistency, local business schema
-- `[later]` Video (3) — video schema, thumbnails, captions
-- `[later]` Analytics (2) — tracking present, consent mode setup
-- `[later]` E-E-A-T (15) — author credentials, content dates, citations, authority and trust signals
-- `[later]` Agent experience (5) — AI crawler access, LLM parsability, page-type and site-profile hints
-- `[later]` Site integrity (6) — injected pages, phishing kits, malware, SEO spam, obfuscated scripts
-- `[later]` Blocking (3) — ad-blocker impact, privacy filter matches
-- `[later]` Gap analysis (2) — keyword and content gaps from live search data (opt-in)
-- `[shipped]` Performance — Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count via `--browser`. Font loading, render-blocking, caching, HTTP/2 still to add.
-- `[shipped]` Accessibility — full axe-core WCAG audit via `--browser`, one finding per check. Covers the ARIA, contrast, landmark, heading-order, and form-label rules.
-- `[browser]` Mobile (6) — viewport behavior, tap target size, font sizing, interstitials
+- `[later]` URL structure (8): length, keywords in slug, hyphenation, lowercase, special characters
+- `[later]` Social media (4): Open Graph image sizing, URL matching, social profile links
+- `[later]` Internationalization (2): language declarations, hreflang correctness
+- `[later]` Legal compliance (4): privacy policy, cookie consent, terms of service presence
+- `[later]` Local SEO (3): NAP consistency, local business schema
+- `[later]` Video (3): video schema, thumbnails, captions
+- `[later]` Analytics (2): tracking present, consent mode setup
+- `[later]` E-E-A-T (15): author credentials, content dates, citations, authority and trust signals
+- `[later]` Agent experience (5): AI crawler access, LLM parsability, page-type and site-profile hints
+- `[later]` Site integrity (6): injected pages, phishing kits, malware, SEO spam, obfuscated scripts
+- `[later]` Blocking (3): ad-blocker impact, privacy filter matches
+- `[later]` Gap analysis (2): keyword and content gaps from live search data (opt-in)
+- `[shipped]` Performance: Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count via `--browser`. Font loading, render-blocking, caching, HTTP/2 still to add.
+- `[shipped]` Accessibility: full axe-core WCAG audit via `--browser`, one finding per check. Covers the ARIA, contrast, landmark, heading-order, and form-label rules.
+- `[browser]` Mobile (6): viewport behavior, tap target size, font sizing, interstitials
 
 ### Sequencing
 

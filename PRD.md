@@ -1,4 +1,4 @@
-# Safi Studio Scanner — PRD
+# Safi Studio Scanner: PRD
 
 ## Overview
 
