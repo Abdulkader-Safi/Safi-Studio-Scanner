@@ -10,6 +10,16 @@ export default defineConfig({
     'Website audit engine for Node.js. Crawls a site, runs 93 checks across 15 categories, and returns a scored report as HTML, Markdown, or JSON.',
   lang: 'en',
   icon: '/favicon.svg',
+  head: [
+    [
+      'script',
+      {
+        defer: 'true',
+        src: 'https://u.abdulkadersafi.com/script.js',
+        'data-website-id': 'ef137e3d-5f14-4460-9715-75188b03bc6e',
+      },
+    ],
+  ],
   themeConfig: {
     // The system has no light mode, so there is no toggle to show.
     darkMode: false,
