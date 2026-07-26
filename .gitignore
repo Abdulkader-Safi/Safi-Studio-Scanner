@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.log
+.DS_Store
 report*.html
 .claude/settings.local.json
 *.tgz
