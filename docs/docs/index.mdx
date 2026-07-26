@@ -1,0 +1,242 @@
+---
+pageType: custom
+title: Safi Studio Scanner
+description: Website audit engine for Node.js. Crawls a site, runs 93 checks across 15 categories, and returns a scored report as HTML, Markdown, or JSON.
+---
+
+<div className="sc-page">
+
+<section className="sc-hero">
+  <div>
+    <p className="sc-hero__caption">Node 18+ · TypeScript · ESM · MIT</p>
+    <h1 className="sc-hero__title">93 checks, <em>one score</em>, every page.</h1>
+    <div className="sc-hero__lead">
+      Point it at a URL. Safi Studio Scanner crawls the site, audits every page
+      it finds, and hands back one report you can render, gate a build on, or
+      store.
+    </div>
+    <div className="sc-actions">
+      <a className="sc-button" href="/guide/start/getting-started">Get started</a>
+      <a className="sc-button sc-button--secondary" href="/guide/using/rules">Browse the rules</a>
+    </div>
+  </div>
+
+  <div className="sc-panel">
+    <div className="sc-panel__head">
+      <span className="sc-panel__label">Overall score</span>
+      <span className="sc-panel__score">78</span>
+    </div>
+    <div className="sc-row">
+      <span className="sc-row__name">security</span>
+      <span className="sc-row__value sc-row__value--up">96</span>
+    </div>
+    <div className="sc-row">
+      <span className="sc-row__name">core-seo</span>
+      <span className="sc-row__value sc-row__value--up">91</span>
+    </div>
+    <div className="sc-row">
+      <span className="sc-row__name">structured-data</span>
+      <span className="sc-row__value">74</span>
+    </div>
+    <div className="sc-row">
+      <span className="sc-row__name">images</span>
+      <span className="sc-row__value sc-row__value--down">58</span>
+    </div>
+    <div className="sc-row">
+      <span className="sc-row__name">links</span>
+      <span className="sc-row__value sc-row__value--down">42</span>
+    </div>
+    <p className="sc-panel__foot">Example output. Shape of a real report, not a real site.</p>
+  </div>
+</section>
+
+<section className="sc-band">
+  <div className="sc-stats">
+    <div className="sc-stat">
+      <span className="sc-stat__value">93</span>
+      <span className="sc-stat__label">Checks</span>
+    </div>
+    <div className="sc-stat">
+      <span className="sc-stat__value">15</span>
+      <span className="sc-stat__label">Categories</span>
+    </div>
+    <div className="sc-stat">
+      <span className="sc-stat__value">3</span>
+      <span className="sc-stat__label">Output formats</span>
+    </div>
+    <div className="sc-stat">
+      <span className="sc-stat__value">1</span>
+      <span className="sc-stat__label">Runtime dependency</span>
+    </div>
+  </div>
+</section>
+
+<section className="sc-band">
+  <h2 className="sc-band__title">Install, then audit</h2>
+  <div className="sc-band__lead">
+    The audit engine is a library, not a command. Import it, call it, and read
+    the report object, or ask for the report already rendered.
+  </div>
+
+```bash
+npm install safi-studio-scanner
+```
+
+```ts
+import { audit, render } from "safi-studio-scanner";
+
+// The full object: score, per-category scores, every finding.
+const report = await audit("https://example.com", { maxPages: 20 });
+console.log(report.score);      // 0-100
+console.log(report.categories); // per-category scores and counts
+
+// JSON for pipelines, CI, dashboards, and diffing one run against the next.
+const json = render(report, "json");
+
+// The same report as one self-contained HTML file.
+const html = render(report, "html");
+```
+
+</section>
+
+<section className="sc-band">
+  <h2 className="sc-band__title">Crawl, check, score</h2>
+  <div className="sc-steps">
+    <div className="sc-step">
+      <span className="sc-step__index">01</span>
+      <p className="sc-step__title">Crawl</p>
+      <div className="sc-step__body">
+        Same-origin pages from the start URL, capped by page count, concurrency,
+        and depth. robots.txt and the sitemap are fetched once and shared.
+      </div>
+    </div>
+    <div className="sc-step">
+      <span className="sc-step__index">02</span>
+      <p className="sc-step__title">Check</p>
+      <div className="sc-step__body">
+        Every selected rule runs against every page, reading one context object:
+        headers, parsed DOM, links, images, and rendered metrics if you asked
+        for them.
+      </div>
+    </div>
+    <div className="sc-step">
+      <span className="sc-step__index">03</span>
+      <p className="sc-step__title">Score</p>
+      <div className="sc-step__body">
+        Findings are weighted by severity into a score per page and per
+        category, then into one deliberately harsh overall number.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section className="sc-band">
+  <h2 className="sc-band__title">What it checks</h2>
+  <div className="sc-band__lead">
+    Thirteen categories need nothing but the HTML and the response headers. Two
+    make extra requests. Accessibility and Core Web Vitals need a rendered page,
+    from either a local Chromium or the PageSpeed Insights API.
+  </div>
+
+  <div className="sc-ledger">
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Core SEO</span>
+      <span className="sc-ledger__count">10</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Performance</span>
+      <span className="sc-ledger__count">12</span>
+      <span className="sc-ledger__meta">Static + rendered</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Security</span>
+      <span className="sc-ledger__count">12</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Structured data</span>
+      <span className="sc-ledger__count">11</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">URL structure</span>
+      <span className="sc-ledger__count">8</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Content</span>
+      <span className="sc-ledger__count">6</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Crawlability</span>
+      <span className="sc-ledger__count">6</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Images</span>
+      <span className="sc-ledger__count">6</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Links</span>
+      <span className="sc-ledger__count">5</span>
+      <span className="sc-ledger__meta">Network</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Social media</span>
+      <span className="sc-ledger__count">4</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Legal</span>
+      <span className="sc-ledger__count">4</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">E-E-A-T</span>
+      <span className="sc-ledger__count">4</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Analytics</span>
+      <span className="sc-ledger__count">2</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Internationalization</span>
+      <span className="sc-ledger__count">2</span>
+      <span className="sc-ledger__meta">Static</span>
+    </div>
+    <div className="sc-ledger__row">
+      <span className="sc-ledger__name">Accessibility</span>
+      <span className="sc-ledger__count">1</span>
+      <span className="sc-ledger__meta">Rendered, axe-core</span>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<section className="sc-closing">
+  <div className="sc-closing__inner">
+    <div>
+      <p className="sc-closing__title">Eleven phases, one shipped.</p>
+      <div className="sc-closing__lead">
+        Phase 0 is what you can install today. The roadmap lists what is being
+        built next and everything planned after it.
+      </div>
+    </div>
+    <a className="sc-button" href="/roadmap/">Read the roadmap</a>
+  </div>
+  <div className="sc-colophon">
+    <span className="sc-colophon__line">MIT licensed. Built by Abdulkader Safi.</span>
+    <span className="sc-colophon__links">
+      <a href="https://abdulkadersafi.com/?utm_source=scanner-docs&utm_medium=referral&utm_campaign=safi-studio-scanner">abdulkadersafi.com</a>
+      <a href="https://safi-studio.com/?utm_source=scanner-docs&utm_medium=referral&utm_campaign=safi-studio-scanner">safi-studio.com</a>
+      <a href="https://github.com/Abdulkader-Safi/Safi-Studio-Scanner">GitHub</a>
+      <a href="https://www.npmjs.com/package/safi-studio-scanner">npm</a>
+    </span>
+  </div>
+</section>

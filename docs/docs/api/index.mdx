@@ -1,0 +1,138 @@
+---
+title: Functions
+description: Every exported function in the package, with signatures and behaviour.
+---
+
+# Functions
+
+The package is ESM. Everything below is a named export of `safi-studio-scanner`.
+
+```ts
+import {
+  audit,
+  auditToHtml,
+  auditToMarkdown,
+  auditScore,
+  render,
+  allRules,
+  selectRules,
+  DEFAULTS,
+} from "safi-studio-scanner";
+```
+
+## audit
+
+```ts
+function audit(
+  startUrl: string,
+  options?: Partial<AuditOptions>,
+): Promise<AuditReport>;
+```
+
+Crawls from `startUrl`, runs the selected rules against every page, scores the findings, and resolves to the report object. This is the only function that performs a run; everything else either wraps it or formats its output.
+
+```ts
+const report = await audit("https://example.com", {
+  maxPages: 20,
+  concurrency: 5,
+  skip: ["links"],
+});
+```
+
+Order of work: fetch `robots.txt` and `sitemap.xml`, crawl the pages, render them if a browser or a PageSpeed key was supplied, run the rules, aggregate.
+
+Throws if `startUrl` is not a valid URL. A page that fails to fetch is still reported, carrying its status and error rather than taking the run down.
+
+## auditToHtml
+
+```ts
+function auditToHtml(
+  url: string,
+  options?: Partial<AuditOptions>,
+): Promise<string>;
+```
+
+Runs an audit and returns the report as one self-contained HTML document: inline styles, no external requests. Write it to a file, serve it, or attach it to an email.
+
+```ts
+await writeFile("report.html", await auditToHtml("https://example.com"));
+```
+
+## auditToMarkdown
+
+```ts
+function auditToMarkdown(
+  url: string,
+  options?: Partial<AuditOptions>,
+): Promise<string>;
+```
+
+Runs an audit and returns Markdown: a score summary, then per-category headings with a findings table.
+
+## auditScore
+
+```ts
+function auditScore(
+  url: string,
+  options?: Partial<AuditOptions>,
+): Promise<number>;
+```
+
+Runs an audit and returns only the overall score, 0 to 100. The whole audit still runs, so this is a convenience, not a fast path.
+
+## render
+
+```ts
+function render(report: AuditReport, format: "json" | "md" | "html"): string;
+```
+
+Formats a report you already have. Synchronous. Audit once, emit every format:
+
+```ts
+const report = await audit(url);
+await writeFile("report.html", render(report, "html"));
+await writeFile("report.json", render(report, "json"));
+await writeFile("report.md", render(report, "md"));
+```
+
+## allRules
+
+```ts
+const allRules: Rule[];
+```
+
+Every built-in rule, in registration order. 93 of them.
+
+```ts
+console.log(allRules.length);
+console.log(new Set(allRules.map((r) => r.category)).size); // 15
+```
+
+## selectRules
+
+```ts
+function selectRules(rules: Rule[], only?: string[], skip?: string[]): Rule[];
+```
+
+Filters a rule array by category. `only` is applied first, then `skip` removes from what is left. This is the same function `audit()` uses internally, exported so you can preview exactly what a set of options will run.
+
+```ts
+const chosen = selectRules(allRules, undefined, ["links", "images"]);
+console.log(`${chosen.length} rules will run`);
+```
+
+## DEFAULTS
+
+```ts
+const DEFAULTS: AuditOptions;
+```
+
+The default option object. Read it rather than hard-coding values, so your code follows the package if a default changes.
+
+```ts
+const report = await audit(url, { ...DEFAULTS, maxPages: 100 });
+```
+
+## Types
+
+Every type is exported as well: `AuditOptions`, `AuditReport`, `PageReport`, `CategoryScore`, `Finding`, `Rule`, `RuleResult`, `RuleContext`, `PageContext`, `SiteContext`, `Format`, `Status`, `Severity`. See [types](/api/types).

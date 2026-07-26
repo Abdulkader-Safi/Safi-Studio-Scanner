@@ -9,7 +9,8 @@
     "dev": "rspress dev",
     "format": "biome format --write",
     "lint": "eslint .",
-    "preview": "rspress preview"
+    "preview": "rspress preview",
+    "rsync": "rspress build && rsync -azP --delete ./doc_build/ safi:/var/www/safi-studio-scanner.abdulkadersafi.com"
   },
   "dependencies": {
     "@rspress/core": "^2.0.17"

@@ -22,7 +22,7 @@ Cost legend, per item:
 
 | Phase | Theme | Why here |
 | --- | --- | --- |
-| 0 | Shipped today | Baseline: 88 rules, 15 categories, crawl, 3 formats |
+| 0 | Shipped today | Baseline: 93 rules, 15 categories, crawl, 3 formats |
 | 1 | Report foundation and free measurements | Nothing else lands cleanly until the report can carry values, not just verdicts |
 | 2 | Text, keyword, and readability engine | One module unlocks four separate report sections |
 | 3 | Answer engine and content structure | Where search is going, and the main differentiator |
@@ -38,7 +38,7 @@ Cost legend, per item:
 
 # Phase 0: Shipped Today
 
-The current state of the package. 88 rules across 15 categories.
+The current state of the package. 93 rules across 15 categories.
 
 ## Engine And SDK
 
@@ -63,7 +63,7 @@ The current state of the package. 88 rules across 15 categories.
 
 ## Rule Coverage Today
 
-- `[done]` **Core SEO** (9): title present and length, meta description present and length, single H1, canonical present, charset, viewport, robots meta indexable, Open Graph basics.
+- `[done]` **Core SEO** (10): title present and length, meta description present and length, single H1, canonical present, charset, viewport, robots meta indexable, Open Graph basics.
 - `[done]` **Content** (6): heading hierarchy, empty headings, word count, keyword stuffing, text-to-HTML ratio, html lang.
 - `[done]` **Links** (5): broken internal, broken external, redirect chains, weak anchor text, external rel.
 - `[done]` **Images** (6): missing alt, missing dimensions, empty src, filename quality, lazy loading, modern format.
@@ -234,6 +234,7 @@ This phase is the gate. Most of the backlog is measurements, and there is nowher
 - `[todo]` Sitemap versus crawl reconciliation: in the sitemap but not crawlable, crawlable but not in the sitemap. (free)
 - `[todo]` Crawl from the sitemap directly, not only by following links. (module)
 - `[todo]` Score thresholds for CI: fail the run under a given overall or per-category score. (free)
+- `[todo]` A CLI wrapper over the library: run an audit from a terminal or a CI step with no script to write. Dropped in 1.0.1, returning on top of the stable API. (module)
 
 ---
 

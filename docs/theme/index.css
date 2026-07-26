@@ -1,63 +1,1028 @@
-/* Example brand color overrides for the custom theme scaffold. */
-/* For more CSS variables, see https://rspress.rs/ui/vars. */
+/* ============================================================================
+   Safi Studio Scanner: brand layer
+   ----------------------------------------------------------------------------
+   Near-black canvas, one accent, flat surfaces. Yellow carries every primary
+   action and every headline claim; nothing else competes with it. Depth comes
+   from a surface step (#0b0e11 -> #1e2329), never from a shadow or a gradient.
+
+   Two type roles:
+     nova -> headlines, prose, labels, buttons, nav
+     plex -> numbers. Scores, counts, rule totals. Always tabular.
+
+   The licensed faces are not public, so each role falls back to its documented
+   stack. Swapping real files in later is one line per token below.
+   ========================================================================== */
+
 :root {
-  --rp-c-brand: #ff5e00;
-  --rp-c-brand-dark: #ff704d;
-  --rp-c-brand-darker: #ff704d;
-  --rp-c-brand-light: #ff7524;
-  --rp-c-brand-lighter: #ff7524;
-  --rp-c-brand-tint: rgba(255, 94, 0, 0.07);
+  /* Type */
+  --sc-font-nova: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --sc-font-plex: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', 'Cascadia Mono', Menlo,
+    monospace;
 
-  --rp-home-hero-secondary-color: #ff5e00;
+  /* Accent. The only brand colour. */
+  --sc-primary: #fcd535;
+  --sc-primary-active: #f0b90b;
+  --sc-primary-disabled: #3a3a1f;
+  --sc-on-primary: #181a20;
+
+  /* Surface, dark */
+  --sc-canvas: #0b0e11;
+  --sc-surface-card: #1e2329;
+  --sc-surface-elevated: #2b3139;
+  --sc-hairline: #2b3139;
+
+  /* Surface, light. Used by the closing band, the way the product closes a
+     dark page on a light footer. */
+  --sc-canvas-light: #ffffff;
+  --sc-surface-soft-light: #fafafa;
+  --sc-hairline-light: #eaecef;
+
+  /* Ink */
+  --sc-ink: #181a20;
+  --sc-on-dark: #ffffff;
+  --sc-body: #eaecef;
+  --sc-muted: #707a8a;
+  --sc-muted-strong: #929aa5;
+
+  /* Direction. Up is good, down is not: score deltas, pass and fail. */
+  --sc-up: #0ecb81;
+  --sc-down: #f6465d;
+  --sc-info: #3b82f6;
+
+  /* Space, base unit 4px */
+  --sc-xxs: 4px;
+  --sc-xs: 8px;
+  --sc-sm: 12px;
+  --sc-md: 16px;
+  --sc-lg: 24px;
+  --sc-xl: 32px;
+  --sc-xxl: 48px;
+  --sc-section: 80px;
+
+  /* Radius */
+  --sc-r-sm: 4px;
+  --sc-r-md: 6px;
+  --sc-r-lg: 8px;
+  --sc-r-xl: 12px;
+  --sc-r-pill: 9999px;
+
+  /* ---- Rspress tokens, remapped ---- */
+  --rp-c-brand: var(--sc-primary);
+  --rp-c-brand-light: var(--sc-primary);
+  --rp-c-brand-lighter: var(--sc-primary);
+  --rp-c-brand-dark: var(--sc-primary-active);
+  --rp-c-brand-darker: var(--sc-primary-active);
+  --rp-c-brand-tint: rgba(252, 213, 53, 0.12);
+
+  --rp-c-bg: var(--sc-canvas);
+  --rp-c-bg-soft: var(--sc-surface-card);
+  --rp-c-bg-mute: var(--sc-surface-elevated);
+  --rp-c-bg-alt: var(--sc-canvas);
+
+  --rp-c-divider: var(--sc-hairline);
+  --rp-c-divider-light: var(--sc-hairline);
+  --rp-c-gutter: var(--sc-hairline);
+
+  --rp-c-text-0: var(--sc-on-dark);
+  --rp-c-text-1: var(--sc-body);
+  --rp-c-text-2: var(--sc-muted-strong);
+  --rp-c-text-3: var(--sc-muted);
+  --rp-c-text-4: var(--sc-muted);
+  --rp-c-link: var(--sc-primary);
+
+  --rp-c-gray: var(--sc-muted);
+  --rp-c-gray-light-1: var(--sc-muted-strong);
+  --rp-c-gray-light-2: var(--sc-muted);
+  --rp-c-gray-light-3: var(--sc-surface-elevated);
+  --rp-c-gray-light-4: var(--sc-hairline);
+  --rp-c-gray-light-5: var(--sc-surface-card);
+
+  --rp-c-text-code: var(--sc-body);
+  --rp-c-text-code-bg: var(--sc-surface-card);
+  --rp-c-text-code-border: var(--sc-hairline);
+
+  --rp-code-font-size: 13px;
+  --rp-code-title-bg: var(--sc-surface-elevated);
+  --rp-code-block-color: var(--sc-body);
+  --rp-code-block-bg: var(--sc-surface-card);
+  --rp-code-block-border: 1px solid var(--sc-hairline);
+  --rp-code-block-shadow: none;
+
+  --rp-radius: var(--sc-r-xl);
+  --rp-radius-small: var(--sc-r-md);
+  --rp-radius-large: var(--sc-r-xl);
+
+  /* Flat surfaces, colour-block separation. No atmospheric depth. */
+  --rp-shadow-1: none;
+  --rp-shadow-2: none;
+  --rp-shadow-3: none;
+  --rp-shadow-4: none;
+  --rp-shadow-5: none;
+
+  --rp-font-family-base: var(--sc-font-nova);
+  --rp-font-family-mono: var(--sc-font-plex);
+
+  --rp-home-hero-title-color: var(--sc-on-dark);
+  --rp-home-hero-title-bg: none;
+  --rp-home-hero-secondary-color: var(--sc-primary);
+  --rp-home-background-bg: var(--sc-canvas);
+  --rp-home-feature-bg: var(--sc-surface-card);
 }
 
-html:not(.dark) {
-  --rp-home-background-bg:
-    radial-gradient(
-      80% 60% at 100% 0%,
-      rgba(255, 117, 36, 0.28) 0%,
-      rgba(255, 255, 255, 0) 70%
-    ),
-    radial-gradient(
-      70% 70% at 50% 0%,
-      rgba(255, 94, 0, 0.18) 0%,
-      rgba(255, 255, 255, 0) 60%
-    ),
-    radial-gradient(
-      90% 70% at 0% 0%,
-      rgba(255, 180, 120, 0.35) 0%,
-      rgba(255, 255, 255, 0) 65%
-    ),
-    radial-gradient(
-      100% 50% at 50% 100%,
-      rgba(255, 117, 36, 0.08) 0%,
-      rgba(255, 255, 255, 0) 50%
-    ),
-    #fff;
+html,
+html.dark,
+html.rp-dark,
+body {
+  background: var(--sc-canvas);
+  color: var(--sc-body);
 }
 
-html.dark {
-  --rp-home-background-bg:
-    radial-gradient(
-      80% 60% at 100% 0%,
-      rgba(255, 117, 36, 0.45) 0%,
-      rgba(255, 94, 0, 0.15) 40%,
-      rgba(18, 18, 18, 0) 75%
-    ),
-    radial-gradient(
-      70% 70% at 50% 0%,
-      rgba(255, 94, 0, 0.3) 0%,
-      rgba(18, 18, 18, 0) 60%
-    ),
-    radial-gradient(
-      90% 70% at 0% 0%,
-      rgba(255, 180, 100, 0.25) 0%,
-      rgba(18, 18, 18, 0) 65%
-    ),
-    radial-gradient(
-      100% 50% at 50% 100%,
-      rgba(255, 117, 36, 0.1) 0%,
-      rgba(18, 18, 18, 0) 50%
-    ),
-    #121212;
+/* Code has to be read, so the tokens are genuinely separated: yellow for the
+   keywords that carry the syntax, green for strings, red for literals, white
+   for identifiers, and a lifted grey for comments. Every one of these clears
+   4.5:1 against the code surface. */
+html:not(.rp-dark),
+html.rp-dark {
+  --shiki-foreground: #eaecef;
+  --shiki-background: var(--sc-surface-card);
+  --shiki-token-keyword: #fcd535;
+  --shiki-token-string: #0ecb81;
+  --shiki-token-string-expression: #0ecb81;
+  --shiki-token-constant: #f6465d;
+  --shiki-token-parameter: #f0b90b;
+  --shiki-token-function: #ffffff;
+  --shiki-token-comment: #929aa5;
+  --shiki-token-punctuation: #b7bdc6;
+  --shiki-token-link: #fcd535;
+  --shiki-token-deleted: #f6465d;
+  --shiki-token-inserted: #0ecb81;
+}
+
+/* ---------------------------------------------------------------- typography */
+
+body {
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.rp-doc h1,
+.rp-doc h2,
+.rp-doc h3,
+.rp-doc h4,
+.rp-doc h5,
+.rp-doc h6 {
+  font-family: var(--sc-font-nova);
+  color: var(--sc-on-dark);
+}
+
+.rp-doc h1 {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--sc-md);
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* The h2 rule is the section divider. Directly under the h1 it would double up
+   with the page title's own spacing, so the first one drops it. */
+.rp-doc h1 + h2 {
+  border-top: none;
+  padding-top: 0;
+  margin-top: var(--sc-xl);
+}
+
+.rp-doc h2::before {
+  display: none;
+}
+
+.rp-doc h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  margin-top: var(--sc-xxl);
+  padding-top: var(--sc-lg);
+  border-top: 1px solid var(--sc-hairline);
+}
+
+.rp-doc h3 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: var(--sc-xl);
+}
+
+.rp-doc h4 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: var(--sc-lg);
+}
+
+.rp-doc p,
+.rp-doc li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sc-body);
+}
+
+.rp-doc strong {
+  font-weight: 600;
+  color: var(--sc-on-dark);
+}
+
+.rp-doc a,
+.rp-link {
+  color: var(--sc-primary);
+  text-decoration: none;
+}
+
+.rp-doc a:active,
+.rp-link:active {
+  color: var(--sc-primary-active);
+}
+
+/* Numbers are tabular wherever they carry meaning. */
+.rp-doc td:first-child,
+.sc-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ nav rail */
+
+.rp-nav {
+  background: var(--sc-canvas);
+  border-bottom: 1px solid var(--sc-hairline);
+  backdrop-filter: none;
+}
+
+/* The wordmark carries the accent, the way the brand mark does. */
+.rp-nav__title,
+.rp-nav__title__link {
+  font-family: var(--sc-font-nova) !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  letter-spacing: -0.2px;
+  color: var(--sc-primary) !important;
+}
+
+.rp-nav-menu__item,
+.rp-nav-menu__item a,
+.rp-nav-menu__item__container {
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sc-muted-strong);
+}
+
+.rp-nav-menu__item--active,
+.rp-nav-menu__item--active a {
+  color: var(--sc-on-dark);
+}
+
+/* ------------------------------------------------------------------- sidebar */
+
+.rp-doc-layout__sidebar {
+  background: var(--sc-canvas);
+  border-right: 1px solid var(--sc-hairline);
+}
+
+.rp-sidebar-item,
+.rp-sidebar-item__left,
+.rp-sidebar-section-header,
+.rp-sidebar-section-header__left {
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sc-muted-strong);
+  border-radius: var(--sc-r-md);
+}
+
+.rp-sidebar-section-header,
+.rp-sidebar-section-header__left {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sc-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.rp-sidebar-item--active,
+.rp-sidebar-item--active .rp-sidebar-item__left {
+  color: var(--sc-primary);
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------- aside */
+
+.rp-outline,
+.rp-outline__title,
+.rp-toc-item,
+.rp-toc-item__text {
+  font-family: var(--sc-font-nova);
+  font-size: 13px;
+  color: var(--sc-muted);
+}
+
+.rp-outline__title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sc-muted-strong);
+}
+
+/* ---------------------------------------------------------------------- code */
+
+.rp-codeblock,
+.rp-doc div[class*='language-'],
+.rp-doc pre {
+  border-radius: var(--sc-r-lg);
+  border: 1px solid var(--sc-hairline);
+  background: var(--sc-surface-card);
+  box-shadow: none;
+}
+
+/* Composed pages render a bare <pre>, with no .rp-doc wrapper to give it a
+   surface. Without this, two blocks in a row fuse into one slab. */
+.sc-band pre.shiki {
+  margin: var(--sc-md) 0;
+  padding: var(--sc-md) var(--sc-lg);
+  border: 1px solid var(--sc-hairline);
+  border-radius: var(--sc-r-lg);
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.rp-codeblock code,
+.rp-doc code {
+  font-family: var(--sc-font-plex);
+  font-size: 13px;
+}
+
+.rp-doc :not(pre) > code {
+  background: var(--sc-surface-card);
+  border: 1px solid var(--sc-hairline);
+  border-radius: var(--sc-r-sm);
+  padding: 1px 5px;
+  color: var(--sc-body);
+}
+
+/* -------------------------------------------------------------------- tables */
+
+.rp-doc table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--sc-hairline);
+  border-radius: var(--sc-r-lg);
+  overflow: hidden;
+  margin: var(--sc-lg) 0;
+}
+
+.rp-doc th {
+  font-family: var(--sc-font-nova);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sc-muted);
+  text-align: left;
+  padding: var(--sc-sm) var(--sc-md);
+  border: none;
+  border-bottom: 1px solid var(--sc-hairline);
+  background: var(--sc-surface-card);
+}
+
+.rp-doc td {
+  font-size: 14px;
+  color: var(--sc-body);
+  padding: var(--sc-sm) var(--sc-md);
+  border: none;
+  border-bottom: 1px solid var(--sc-hairline);
+  background: transparent;
+  vertical-align: top;
+}
+
+.rp-doc tr {
+  background: transparent !important;
+}
+
+.rp-doc tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --------------------------------------------------------------- containers */
+
+.rp-doc .rp-callout,
+.rp-doc .rp-callout--warning,
+.rp-doc .rp-callout--danger,
+.rp-doc .rp-callout--tip,
+.rp-doc .rp-callout--info,
+.rp-doc .rp-callout--note {
+  border-radius: var(--sc-r-lg);
+  border: 1px solid var(--sc-hairline);
+  border-left: 1px solid var(--sc-hairline);
+  /* A tinted fill would spend the accent on a surface. The title carries it. */
+  background: var(--sc-surface-card);
+  padding: var(--sc-md) var(--sc-lg);
+}
+
+.rp-callout__title {
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sc-on-dark);
+}
+
+.rp-callout--warning .rp-callout__title {
+  color: var(--sc-primary);
+}
+
+.rp-callout--danger .rp-callout__title {
+  color: var(--sc-down);
+}
+
+.rp-callout--tip .rp-callout__title,
+.rp-callout--info .rp-callout__title {
+  color: var(--sc-up);
+}
+
+/* -------------------------------------------------------------------- search */
+
+.rp-search-button,
+.rp-search-input {
+  border-radius: var(--sc-r-lg);
+  background: var(--sc-surface-card);
+  border: 1px solid var(--sc-hairline);
+  color: var(--sc-muted-strong);
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+}
+
+.rp-search-button__hotkey,
+.rp-search-button__hotkey * {
+  background: var(--sc-surface-elevated);
+  border-color: var(--sc-hairline);
+  color: var(--sc-muted);
+}
+
+input::placeholder {
+  color: var(--sc-muted);
+}
+
+/* -------------------------------------------------------- prev / next footer */
+
+.rp-prev-next-page__item {
+  border-radius: var(--sc-r-lg);
+  border: 1px solid var(--sc-hairline);
+  background: var(--sc-surface-card);
+  color: var(--sc-body);
+  text-decoration: none;
+}
+
+.rp-prev-next-page__item__title {
+  color: var(--sc-primary);
+  font-weight: 600;
+}
+
+/* ============================================================================
+   Composed pages
+   ========================================================================== */
+
+.sc-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--sc-lg);
+}
+
+/* --------------------------------------------------------------------- hero */
+
+.sc-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: var(--sc-xxl);
+  align-items: center;
+  padding: var(--sc-section) 0;
+}
+
+.sc-hero__caption {
+  font-size: 13px;
+  color: var(--sc-muted);
+  margin: 0 0 var(--sc-md);
+}
+
+.sc-hero__title {
+  font-family: var(--sc-font-nova);
+  font-size: clamp(36px, 5.4vw, 64px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--sc-on-dark);
+  margin: 0 0 var(--sc-md);
+}
+
+.sc-hero__title em {
+  font-style: normal;
+  color: var(--sc-primary);
+}
+
+.sc-hero__lead {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--sc-muted-strong);
+  max-width: 48ch;
+  margin: 0 0 var(--sc-xl);
+}
+
+.sc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sc-sm);
+}
+
+/* ------------------------------------------------------------------ buttons */
+
+.sc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 var(--sc-xl);
+  background: var(--sc-primary);
+  border: 1px solid var(--sc-primary);
+  border-radius: var(--sc-r-pill);
+  color: var(--sc-on-primary);
+  font-family: var(--sc-font-nova);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 120ms linear, border-color 120ms linear;
+}
+
+.sc-button:active {
+  background: var(--sc-primary-active);
+  border-color: var(--sc-primary-active);
+  color: var(--sc-on-primary);
+}
+
+.sc-button--secondary {
+  background: var(--sc-surface-card);
+  border-color: var(--sc-hairline);
+  border-radius: var(--sc-r-md);
+  color: var(--sc-on-dark);
+}
+
+.sc-button--secondary:active {
+  background: var(--sc-surface-elevated);
+  border-color: var(--sc-surface-elevated);
+  color: var(--sc-on-dark);
+}
+
+/* ------------------------------------------------------------ report panel */
+
+.sc-panel {
+  background: var(--sc-surface-card);
+  border-radius: var(--sc-r-xl);
+  padding: var(--sc-lg);
+}
+
+.sc-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sc-md);
+  padding-bottom: var(--sc-md);
+  border-bottom: 1px solid var(--sc-hairline);
+}
+
+.sc-panel__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sc-muted);
+}
+
+.sc-panel__score {
+  font-family: var(--sc-font-plex);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: var(--sc-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sc-md);
+  padding: var(--sc-sm) 0;
+  border-bottom: 1px solid var(--sc-hairline);
+}
+
+.sc-row:last-child {
+  border-bottom: none;
+}
+
+.sc-row__name {
+  font-size: 14px;
+  color: var(--sc-body);
+}
+
+.sc-row__value {
+  font-family: var(--sc-font-plex);
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--sc-body);
+}
+
+.sc-row__value--up {
+  color: var(--sc-up);
+}
+
+.sc-row__value--down {
+  color: var(--sc-down);
+}
+
+.sc-panel__foot {
+  margin: var(--sc-md) 0 0;
+  font-size: 12px;
+  color: var(--sc-muted);
+}
+
+/* --------------------------------------------------------------------- band */
+
+.sc-band {
+  padding: var(--sc-section) 0;
+  border-top: 1px solid var(--sc-hairline);
+}
+
+.sc-band__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sc-primary);
+  margin: 0 0 var(--sc-sm);
+}
+
+.sc-band__title {
+  font-family: var(--sc-font-nova);
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--sc-on-dark);
+  margin: 0 0 var(--sc-md);
+}
+
+.sc-band__lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--sc-muted-strong);
+  max-width: 68ch;
+  margin: 0 0 var(--sc-xl);
+}
+
+/* ---------------------------------------------------------------- stat block */
+
+.sc-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sc-lg);
+}
+
+.sc-stat__value {
+  display: block;
+  font-family: var(--sc-font-plex);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  color: var(--sc-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sc-stat__label {
+  display: block;
+  font-size: 14px;
+  color: var(--sc-muted-strong);
+  margin-top: var(--sc-xxs);
+}
+
+/* ------------------------------------------------------------- rule listing */
+
+.sc-ledger {
+  background: var(--sc-surface-card);
+  border-radius: var(--sc-r-xl);
+  padding: var(--sc-xs) var(--sc-lg);
+}
+
+.sc-ledger__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sc-md);
+  padding: var(--sc-sm) 0;
+  border-bottom: 1px solid var(--sc-hairline);
+}
+
+.sc-ledger__row:last-child {
+  border-bottom: none;
+}
+
+.sc-ledger__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sc-on-dark);
+}
+
+.sc-ledger__count {
+  font-family: var(--sc-font-plex);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sc-primary);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  padding-right: var(--sc-md);
+}
+
+.sc-ledger__meta {
+  font-size: 12px;
+  color: var(--sc-muted);
+  min-width: 128px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------- steps, three across */
+
+.sc-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sc-lg);
+}
+
+.sc-step {
+  background: var(--sc-surface-card);
+  border-radius: var(--sc-r-lg);
+  padding: var(--sc-lg);
+}
+
+.sc-step__index {
+  font-family: var(--sc-font-plex);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sc-primary);
+}
+
+.sc-step__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sc-on-dark);
+  margin: var(--sc-xs) 0 var(--sc-xxs);
+}
+
+.sc-step__body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sc-muted-strong);
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ closing band */
+
+/* The page closes on a light surface, the way the product closes a dark page
+   on a light footer. */
+.sc-closing {
+  background: var(--sc-surface-soft-light);
+  padding: var(--sc-section) var(--sc-lg);
+}
+
+.sc-closing__inner {
+  max-width: 1232px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sc-xl);
+  flex-wrap: wrap;
+}
+
+.sc-closing__title {
+  font-family: var(--sc-font-nova);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  color: var(--sc-ink);
+  margin: 0 0 var(--sc-xs);
+}
+
+.sc-closing__lead {
+  font-size: 14px;
+  color: #474d57;
+  margin: 0;
+  max-width: 62ch;
+}
+
+.sc-colophon {
+  max-width: 1232px;
+  margin: var(--sc-xl) auto 0;
+  padding-top: var(--sc-md);
+  border-top: 1px solid var(--sc-hairline-light);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sc-sm) var(--sc-lg);
+  font-size: 13px;
+  color: #5e6673;
+}
+
+.sc-colophon__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sc-lg);
+}
+
+.sc-colophon__links a {
+  color: #474d57;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sc-colophon__links a:active {
+  color: var(--sc-ink);
+}
+
+/* Roadmap status. Direction reads the way it does on a price: up is shipped,
+   yellow is what is moving now, muted is everything still queued. */
+
+.rp-doc .sc-phase {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sc-muted);
+  margin: 0 0 var(--sc-sm);
+}
+
+.rp-doc .sc-phase--now {
+  color: var(--sc-primary);
+}
+
+.rp-doc .sc-phase--done {
+  color: var(--sc-up);
+}
+
+/* Every backlog item carries its own state, so a phase never reads as an
+   undifferentiated pile of bullets. */
+.rp-doc .sc-list ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 var(--sc-md);
+}
+
+.rp-doc .sc-list li {
+  position: relative;
+  padding-left: 26px;
+  margin: var(--sc-xs) 0;
+}
+
+.rp-doc .sc-list li::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--sc-font-plex);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.rp-doc .sc-list--done li::before {
+  content: 'DONE';
+  content: '\2713';
+  color: var(--sc-up);
+  font-size: 13px;
+}
+
+.rp-doc .sc-list--now li::before {
+  content: '\25B8';
+  color: var(--sc-primary);
+  font-size: 13px;
+}
+
+.rp-doc .sc-list--planned li::before,
+.rp-doc .sc-list--off li::before {
+  content: '\25CB';
+  color: var(--sc-muted);
+  font-size: 11px;
+}
+
+.rp-doc .sc-list--done li {
+  color: var(--sc-body);
+}
+
+.rp-doc .sc-list--planned li,
+.rp-doc .sc-list--off li {
+  color: var(--sc-muted-strong);
+}
+
+/* How much of the plan is actually built, at a glance. */
+.sc-progress {
+  display: flex;
+  gap: 4px;
+  margin: var(--sc-lg) 0 var(--sc-xs);
+}
+
+.sc-progress__seg {
+  height: 6px;
+  flex: 1 1 0;
+  border-radius: 2px;
+  background: var(--sc-surface-elevated);
+}
+
+.sc-progress__seg--done {
+  background: var(--sc-up);
+}
+
+.sc-progress__seg--now {
+  background: var(--sc-primary);
+}
+
+.sc-progress__caption {
+  font-size: 13px;
+  color: var(--sc-muted);
+  margin: 0 0 var(--sc-lg);
+}
+
+.sc-tag {
+  font-family: var(--sc-font-nova);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sc-muted);
+}
+
+.sc-tag--up {
+  color: var(--sc-up);
+}
+
+.sc-tag--now {
+  color: var(--sc-primary);
+}
+
+/* --------------------------------------------------------------- responsive */
+
+@media (max-width: 1024px) {
+  .sc-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sc-xl);
+  }
+
+  .sc-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sc-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sc-hero,
+  .sc-band {
+    padding: var(--sc-xxl) 0;
+  }
+
+  .sc-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sc-md);
+  }
+
+  .sc-stat__value {
+    font-size: 32px;
+  }
+
+  .sc-ledger__meta {
+    display: none;
+  }
+
+  .sc-actions .sc-button {
+    flex: 1 1 auto;
+  }
+
+  .rp-doc h1 {
+    font-size: 30px;
+  }
+
+  .rp-doc h2 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
