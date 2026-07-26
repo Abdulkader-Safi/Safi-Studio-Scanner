@@ -21,12 +21,15 @@ export default defineConfig({
         'data-website-id': 'ef137e3d-5f14-4460-9715-75188b03bc6e',
       },
     ],
-    // Absolute, because Facebook and LinkedIn will not resolve a relative
-    // og:image. Every page shares the one card.
-    ['meta', { property: 'og:type', content: 'website' }],
+    // Absolute, because Facebook, LinkedIn and WhatsApp will not resolve a
+    // relative og:image. rspress already emits og:type, og:title and
+    // og:description, so only the card is declared here. It is a JPEG because
+    // WhatsApp skips images much over a couple of hundred kilobytes.
     ['meta', { property: 'og:site_name', content: 'Safi Studio Scanner' }],
     ['meta', { property: 'og:url', content: SITE }],
-    ['meta', { property: 'og:image', content: `${SITE}/og-image.png` }],
+    ['meta', { property: 'og:image', content: `${SITE}/og-image.jpg` }],
+    ['meta', { property: 'og:image:secure_url', content: `${SITE}/og-image.jpg` }],
+    ['meta', { property: 'og:image:type', content: 'image/jpeg' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     [
@@ -37,7 +40,7 @@ export default defineConfig({
       },
     ],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:image', content: `${SITE}/og-image.png` }],
+    ['meta', { name: 'twitter:image', content: `${SITE}/og-image.jpg` }],
   ],
   themeConfig: {
     // The system has no light mode, so there is no toggle to show.
