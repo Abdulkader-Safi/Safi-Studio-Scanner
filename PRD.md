@@ -2,7 +2,7 @@
 
 ## Overview
 
-Scanner is a Node.js command-line tool, written in TypeScript, that audits a web page against a large set of quality rules and exports a single report as HTML, Markdown, or JSON. It is an open-source take on the closed-source squirrelscan.com, which checks a site across 245 rules in 22 categories.
+Scanner is a Node.js command-line tool, written in TypeScript, that audits a web page against a large set of quality rules and exports a single report as HTML, Markdown, or JSON. It is an open-source alternative to the paid, closed-source site auditors, targeting a catalog of a few hundred rules across roughly 20 categories.
 
 The audit logic lives in a library. The CLI is a thin wrapper over it, so the same engine can later ship as an SDK or power a hosted service without a rewrite.
 
@@ -10,7 +10,7 @@ The audit logic lives in a library. The CLI is a thin wrapper over it, so the sa
 
 - Run a full page audit from the terminal with one command.
 - Export one report in the format the user asks for: HTML, Markdown, or JSON.
-- Make rules pluggable so the catalog can grow from a starter set toward full squirrelscan parity, one category at a time.
+- Make rules pluggable so the catalog can grow from a starter set toward full coverage, one category at a time.
 - Keep the first version dependency-light and runnable with Node today.
 
 ## Non-goals (for the first version)
@@ -24,7 +24,7 @@ The audit logic lives in a library. The CLI is a thin wrapper over it, so the sa
 
 - Developers and SEO-minded builders who want a quick, scriptable page audit.
 - Agencies and freelancers running checks across client sites from the terminal or CI.
-- Anyone who wants squirrelscan-style coverage without a paid, closed tool.
+- Anyone who wants full-coverage site auditing without a paid, closed tool.
 
 ## How it works
 
@@ -154,4 +154,4 @@ test/
 2. **v0.2.** SDK packaging and a stable library API.
 3. **v0.3.** Headless browser rules (Core Web Vitals, color contrast, focus and ARIA checks, tap targets, render-blocking) behind `--browser`.
 4. **v0.4.** Multi-page crawl driven by sitemap and internal links.
-5. **Later.** Remaining squirrelscan categories toward full 245-rule parity: accessibility, performance, E-E-A-T, internationalization, agent experience, legal, local SEO, video, analytics, and the rest.
+5. **Later.** Remaining categories toward full catalog coverage: accessibility, performance, E-E-A-T, internationalization, agent experience, legal, local SEO, video, analytics, and the rest. See `features.md` for the phased plan.
