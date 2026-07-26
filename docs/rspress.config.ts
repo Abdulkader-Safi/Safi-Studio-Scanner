@@ -13,14 +13,6 @@ export default defineConfig({
   lang: 'en',
   icon: '/favicon.svg',
   head: [
-    [
-      'script',
-      {
-        defer: 'true',
-        src: 'https://u.abdulkadersafi.com/script.js',
-        'data-website-id': 'ef137e3d-5f14-4460-9715-75188b03bc6e',
-      },
-    ],
     // Absolute, because Facebook, LinkedIn and WhatsApp will not resolve a
     // relative og:image. rspress already emits og:type, og:title and
     // og:description, so only the card is declared here. It is a JPEG because
@@ -41,6 +33,10 @@ export default defineConfig({
     ],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:image', content: `${SITE}/og-image.jpg` }],
+    // Written as a raw string, which rspress passes through verbatim. The tuple
+    // form renders `<tag attrs>` and never closes it, so an unclosed <script>
+    // swallowed the meta tags after it and social scrapers saw no card at all.
+    '<script defer src="https://u.abdulkadersafi.com/script.js" data-website-id="ef137e3d-5f14-4460-9715-75188b03bc6e"></script>',
   ],
   themeConfig: {
     // The system has no light mode, so there is no toggle to show.
