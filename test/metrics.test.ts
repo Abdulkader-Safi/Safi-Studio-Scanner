@@ -186,6 +186,48 @@ test("link tables are omitted when a page has no links of that kind", async () =
   assert.equal(val(m.get("links/duplicate-count")).status, "ok");
 });
 
+test("headings are counted per level", async () => {
+  const m = await metricsFor("outline.html", "https://example.com/outline");
+  assert.equal(val(m.get("content/heading-count")).value, 5);
+  assert.equal(val(m.get("content/heading-count")).note, "H1 1 · H2 3 · H3 1 · H4 0 · H5 0 · H6 0");
+  const levels = m.get("content/heading-levels") as MetricTable;
+  assert.deepEqual(levels.rows, [
+    ["H1", 1],
+    ["H2", 3],
+    ["H3", 1],
+    ["H4", 0],
+    ["H5", 0],
+    ["H6", 0],
+  ]);
+});
+
+test("the outline reads in document order, indented by level", async () => {
+  const m = await metricsFor("outline.html", "https://example.com/outline");
+  const t = m.get("content/heading-outline") as MetricTable;
+  assert.equal(t.rows.length, 5);
+  assert.deepEqual(t.rows[0], ["H1", "How the engine works", "—"]);
+  assert.equal(t.rows[1][1], "— Fetching", "an H2 sits one step in");
+  assert.equal(t.rows[2][1], "— — Timeouts", "an H3 sits two steps in");
+  assert.equal(t.rows[3][1], "— Scoring");
+});
+
+test("each heading reports what its section carries", async () => {
+  const m = await metricsFor("outline.html", "https://example.com/outline");
+  const t = m.get("content/heading-outline") as MetricTable;
+  const fetching = t.rows.find((r) => String(r[1]).includes("Fetching"))!;
+  assert.equal(fetching[2], "IMG: 1, UL: 1");
+  const scoring = t.rows.find((r) => String(r[1]).includes("Scoring"))!;
+  assert.equal(scoring[2], "TABLE: 1");
+  const timeouts = t.rows.find((r) => String(r[1]).includes("Timeouts"))!;
+  assert.equal(timeouts[2], "—");
+});
+
+test("an empty heading is named rather than left blank", async () => {
+  const m = await metricsFor("outline.html", "https://example.com/outline");
+  const t = m.get("content/heading-outline") as MetricTable;
+  assert.ok(t.rows.some((r) => String(r[1]).includes("(empty)")));
+});
+
 test("a table caps its rows but keeps the true total", () => {
   const rows = Array.from({ length: 40 }, (_, i) => [`row ${i}`]);
   const t = table("x/y", "Many", ["Col"], rows) as MetricTable;

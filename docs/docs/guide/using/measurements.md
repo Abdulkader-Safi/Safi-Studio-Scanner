@@ -46,6 +46,11 @@ A metric with no status is a plain count with no correct answer, like the number
 | `content/body-style-blocks` | value | `<style>` blocks inside `<body>`, which restyle content already being painted. |
 | `content/html-comments` | value | Comment nodes anywhere in the document. They ship to every visitor. |
 | `content/placeholder-links` | value | Anchors with `href="#"`, an empty `href`, or `javascript:void`. |
+| `content/heading-count` | value | Total headings. The note carries the per-level split. |
+| `content/heading-levels` | table | H1 through H6 with a count each, for reading in code. |
+| `content/heading-outline` | table | Every heading in document order: level, text indented by depth, and what its section contains. |
+
+The outline is the page's table of contents as the parser sees it. A heading's section is everything between it and the next heading at any level, and the third column names what that section carries: `IMG: 1, UL: 1` says the section has a picture and a list. An empty heading is listed as `(empty)` rather than vanishing into a blank row. Capped at 40 rows.
 
 Hidden elements are counted from inline styles only. There is no CSS cascade in a static parse, so a class that hides an element in a stylesheet is invisible here.
 
