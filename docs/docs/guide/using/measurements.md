@@ -35,6 +35,10 @@ A metric with no status is a plain count with no correct answer, like the number
 | `core-seo/description-chars` | value | Meta description length. `ok` between 70 and 160. |
 | `core-seo/h1-count` | value | How many H1 elements. `ok` at exactly one. |
 | `core-seo/h1-chars` | value | Length of the first H1. `ok` between 10 and 70. |
+| `core-seo/og-coverage` | value | How many of the seven Open Graph tags are set. |
+| `core-seo/og-table` | table | Every tag: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`, `og:site_name`, `og:locale`, with its content and state. |
+
+A tag's state is `present`, `missing` or `not set`. The difference matters: `missing` means a card will not render properly without it, `not set` means the card works and would be sharper with it. Only `og:title`, `og:description` and `og:image` can be `missing`.
 
 ## Content
 
@@ -86,6 +90,26 @@ A canonical that points elsewhere is `warn`, not `bad`. It is the correct thing 
 The duplicate table is the one to read. It is sorted by count, and it answers a question no per-link list can: this page links `/pricing` three times, once as "Pricing", once as "pricing page", once as "the plans". That is either a deliberate spread of anchor text or an accident, and seeing them on one row is what tells you which.
 
 All three tables are omitted when the page has no links of that kind.
+
+## Images
+
+| Metric | Shape | Reports |
+| --- | --- | --- |
+| `images/count` | value | Images on the page. |
+| `images/with-alt` | value | Images carrying real alt text. |
+| `images/without-alt` | value | Images with no `alt` attribute at all. `bad` above zero. |
+| `images/http-count` | value | Images loaded over plain HTTP, which break the padlock on an HTTPS page. |
+
+`alt=""` and a missing `alt` are counted separately. An empty alt is a decision, saying the image is decorative and screen readers should skip it. A missing attribute is an omission. The note on `images/with-alt` splits the two.
+
+## Social media
+
+| Metric | Shape | Reports |
+| --- | --- | --- |
+| `social-media/twitter-coverage` | value | How many of the six Twitter tags are set. |
+| `social-media/twitter-table` | table | `twitter:card`, `title`, `description`, `image`, `site`, `creator`. |
+
+Only `twitter:card` counts as required. Twitter falls back to Open Graph for the title, description and image, so an empty table next to a full Open Graph one is a working card, not a broken one.
 
 ## Internationalization
 

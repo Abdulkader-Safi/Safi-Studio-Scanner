@@ -228,6 +228,52 @@ test("an empty heading is named rather than left blank", async () => {
   assert.ok(t.rows.some((r) => String(r[1]).includes("(empty)")));
 });
 
+test("the Open Graph table lists every tag, set or not", async () => {
+  const m = await metricsFor("social.html", "https://example.com/social");
+  assert.equal(val(m.get("core-seo/og-coverage")).value, "5 of 7");
+  assert.equal(val(m.get("core-seo/og-coverage")).status, "ok", "all three required tags are set");
+  const t = m.get("core-seo/og-table") as MetricTable;
+  assert.equal(t.rows.length, 7);
+  assert.deepEqual(t.rows[0], ["og:title", "Register of Marks", "present"]);
+  assert.deepEqual(t.rows[6], ["og:locale", "—", "not set"]);
+});
+
+test("a missing required tag is called missing, an optional one is only not set", async () => {
+  const m = await metricsFor("good.html", "https://example.com/good");
+  const og = m.get("core-seo/og-table") as MetricTable;
+  const url = og.rows.find((r) => r[0] === "og:url")!;
+  assert.equal(url[2], "not set");
+
+  const bare = await metricsFor("bad.html", "http://example.com/bad");
+  const t = bare.get("core-seo/og-table") as MetricTable;
+  assert.equal(t.rows.find((r) => r[0] === "og:image")![2], "missing");
+  assert.equal(val(bare.get("core-seo/og-coverage")).status, "missing");
+});
+
+test("twitter tags read from name attributes and note the Open Graph fallback", async () => {
+  const m = await metricsFor("social.html", "https://example.com/social");
+  assert.equal(val(m.get("social-media/twitter-coverage")).value, "2 of 6");
+  assert.equal(val(m.get("social-media/twitter-coverage")).status, "ok");
+
+  const none = await metricsFor("good.html", "https://example.com/good");
+  assert.equal(val(none.get("social-media/twitter-coverage")).status, "missing");
+  assert.equal(val(none.get("social-media/twitter-coverage")).note, "Falls back to Open Graph");
+});
+
+test("alt coverage separates decorative from undescribed", async () => {
+  const m = await metricsFor("social.html", "https://example.com/social");
+  assert.equal(val(m.get("images/count")).value, 4);
+  assert.equal(val(m.get("images/with-alt")).value, 2);
+  assert.equal(val(m.get("images/without-alt")).value, 1);
+  assert.equal(
+    val(m.get("images/with-alt")).note,
+    "1 marked decorative, 1 with no alt attribute",
+    'alt="" is a decision, a missing attribute is not',
+  );
+  assert.equal(val(m.get("images/http-count")).value, 1);
+  assert.equal(val(m.get("images/http-count")).status, "bad");
+});
+
 test("a table caps its rows but keeps the true total", () => {
   const rows = Array.from({ length: 40 }, (_, i) => [`row ${i}`]);
   const t = table("x/y", "Many", ["Col"], rows) as MetricTable;
