@@ -146,6 +146,22 @@ const CAT_ORDER = [
 ];
 const STATUS_RANK: Record<Status, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
 
+const FOOTER_LINKS = [
+  { label: "abdulkadersafi.com", href: "https://abdulkadersafi.com" },
+  { label: "safi-studio.com", href: "https://safi-studio.com" },
+  { label: "GitHub", href: "https://github.com/Abdulkader-Safi/Safi-Studio-Scanner" },
+  { label: "npm", href: "https://www.npmjs.com/package/safi-studio-scanner" },
+];
+
+/** Attribution, so a report that gets forwarded is traceable back to the tool. */
+function tagged(href: string): string {
+  const u = new URL(href);
+  u.searchParams.set("utm_source", "safi-studio-scanner");
+  u.searchParams.set("utm_medium", "audit-report");
+  u.searchParams.set("utm_campaign", "report-footer");
+  return u.toString();
+}
+
 interface PageIssue {
   status: Status;
   message: string;
@@ -253,7 +269,9 @@ ${rows}
 }
 * { box-sizing:border-box; }
 body {
-  margin:0; padding:56px clamp(20px,6vw,96px) 96px; background:var(--bg); color:var(--text);
+  /* One measure, centred at every width. Without the auto margins the column
+     hugs the left edge of a wide screen and the page reads as unplaced. */
+  margin:0 auto; padding:56px clamp(20px,6vw,96px) 96px; background:var(--bg); color:var(--text);
   font-family:Inter,system-ui,sans-serif; line-height:1.5; max-width:980px;
 }
 h1,h2 { font-family:'Space Grotesk',system-ui,sans-serif; font-weight:700; letter-spacing:-0.02em; }
@@ -333,7 +351,9 @@ table.mv th:nth-child(2), table.mv td.val { width:22%; }
 .mdot.v-warn { background:var(--warn); }
 .mdot.v-bad { background:var(--fail); }
 .mdot.v-missing { background:var(--info); }
-footer { margin-top:80px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; }
+footer { margin-top:96px; padding-top:32px; border-top:1px solid var(--line); text-align:center; color:var(--muted); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; }
+footer .colophon { margin:0 0 18px; }
+footer .flinks { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 28px; }
 footer a { color:var(--muted); text-decoration:none; }
 footer a:hover { color:var(--clay); }
 </style>
@@ -352,8 +372,10 @@ footer a:hover { color:var(--clay); }
 ${sections}
 ${measurements}
 <footer>
-  <a href="https://abdulkadersafi.com">abdulkadersafi.com</a>
-  <span>${r.pagesScanned} page(s)</span>
+  <p class="colophon">MIT licensed. Built by Abdulkader Safi.</p>
+  <nav class="flinks">
+${FOOTER_LINKS.map((l) => `    <a href="${esc(tagged(l.href))}" rel="noopener">${esc(l.label)}</a>`).join("\n")}
+  </nav>
 </footer>
 <script>
 (function () {

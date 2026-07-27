@@ -77,6 +77,22 @@ export const coreSeoRules: Rule[] = [
     },
   },
   {
+    id: "core-seo/h1-length",
+    category: "core-seo",
+    title: "H1 length",
+    severity: "info",
+    fix: "Rewrite the H1 to sit between 10 and 70 characters. One word says nothing; a sentence is not a heading.",
+    run({ page }) {
+      const h1 = page.$("h1").first().text().replace(/\s+/g, " ").trim();
+      if (!h1) return [{ status: "warn", message: "No H1 to measure" }];
+      if (h1.length < 10)
+        return [{ status: "warn", message: `H1 is short (${h1.length} chars)`, evidence: h1 }];
+      if (h1.length > 70)
+        return [{ status: "warn", message: `H1 is long (${h1.length} chars)`, evidence: h1 }];
+      return [{ status: "pass", message: `H1 length good (${h1.length} chars)` }];
+    },
+  },
+  {
     id: "core-seo/canonical-present",
     category: "core-seo",
     title: "Canonical URL present",

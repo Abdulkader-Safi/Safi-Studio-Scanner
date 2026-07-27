@@ -94,3 +94,16 @@ test("metrics render in every format", () => {
   assert.match(html, /mdot v-ok/, "a value carries its status as a colour");
   assert.match(html, /showing 1 of 9/);
 });
+
+test("html centres its column and closes on a credited footer", () => {
+  const out = render(report, "html");
+  assert.match(out, /margin:0 auto/, "the measure sits centred at any viewport width");
+  assert.match(out, /MIT licensed\. Built by Abdulkader Safi\./);
+  for (const label of ["abdulkadersafi.com", "safi-studio.com", "GitHub", "npm"])
+    assert.ok(out.includes(`>${label}</a>`), `footer is missing the ${label} link`);
+  assert.equal(
+    (out.match(/utm_source=safi-studio-scanner/g) ?? []).length,
+    4,
+    "every footer link carries attribution",
+  );
+});
