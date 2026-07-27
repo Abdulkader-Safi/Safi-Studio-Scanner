@@ -20,25 +20,25 @@ Cost legend, per item:
 
 ## Priority Order At A Glance
 
-| Phase | Theme | Why here |
-| --- | --- | --- |
-| 0 | Shipped today | Baseline: 93 rules, 15 categories, crawl, 3 formats |
-| 1 | Report foundation and free measurements | Nothing else lands cleanly until the report can carry values, not just verdicts |
-| 2 | Text, keyword, and readability engine | One module unlocks four separate report sections |
-| 3 | Answer engine and content structure | Where search is going, and the main differentiator |
-| 4 | Site-wide crawl intelligence | The crawler already runs; cross-page findings are the payoff no single-page tool has |
-| 5 | Trust, authority, and compliance | High client value, cheap static detection |
-| 6 | Performance and speed depth | Mostly surfacing timings the browser stage already collects |
-| 7 | Tech stack fingerprinting | Boring to build, high perceived value in a report |
-| 8 | Media and asset analysis | Real value, but costs network requests, so it goes behind a flag |
-| 9 | Mobile and browser-stage extras | Needs Chromium, narrower audience |
-| 10 | External data and site integrity | Keys, rate limits, and heuristics with false positives |
+| Phase | Theme                                   | Why here                                                                             |
+| ----- | --------------------------------------- | ------------------------------------------------------------------------------------ |
+| 0     | Shipped today                           | Baseline: 94 rules, 15 categories, crawl, 3 formats                                  |
+| 1     | Report foundation and free measurements | Nothing else lands cleanly until the report can carry values, not just verdicts      |
+| 2     | Text, keyword, and readability engine   | One module unlocks four separate report sections                                     |
+| 3     | Answer engine and content structure     | Where search is going, and the main differentiator                                   |
+| 4     | Site-wide crawl intelligence            | The crawler already runs; cross-page findings are the payoff no single-page tool has |
+| 5     | Trust, authority, and compliance        | High client value, cheap static detection                                            |
+| 6     | Performance and speed depth             | Mostly surfacing timings the browser stage already collects                          |
+| 7     | Tech stack fingerprinting               | Boring to build, high perceived value in a report                                    |
+| 8     | Media and asset analysis                | Real value, but costs network requests, so it goes behind a flag                     |
+| 9     | Mobile and browser-stage extras         | Needs Chromium, narrower audience                                                    |
+| 10    | External data and site integrity        | Keys, rate limits, and heuristics with false positives                               |
 
 ---
 
 # Phase 0: Shipped Today
 
-The current state of the package. 93 rules across 15 categories.
+The current state of the package. 94 rules across 15 categories.
 
 ## Engine And SDK
 
@@ -63,7 +63,7 @@ The current state of the package. 93 rules across 15 categories.
 
 ## Rule Coverage Today
 
-- `[done]` **Core SEO** (10): title present and length, meta description present and length, single H1, canonical present, charset, viewport, robots meta indexable, Open Graph basics.
+- `[done]` **Core SEO** (11): title present and length, meta description present and length, single H1, H1 length, canonical present, charset, viewport, robots meta indexable, Open Graph basics.
 - `[done]` **Content** (6): heading hierarchy, empty headings, word count, keyword stuffing, text-to-HTML ratio, html lang.
 - `[done]` **Links** (5): broken internal, broken external, redirect chains, weak anchor text, external rel.
 - `[done]` **Images** (6): missing alt, missing dimensions, empty src, filename quality, lazy loading, modern format.
@@ -85,58 +85,58 @@ The current state of the package. 93 rules across 15 categories.
 
 **Goal:** let the report carry numbers and tables, not only pass/fail findings. Then harvest everything already sitting in the parsed DOM.
 
-This phase is the gate. Most of the backlog is measurements, and there is nowhere to put a measurement today.
+This phase was the gate, and it shipped in 1.0.2. Most of the backlog is measurements, and until this landed there was nowhere to put one.
 
 ## 1.1 Report Shape
 
-- `[todo]` `metrics` output alongside `findings`, per category, holding raw numbers and tables. (module)
-- `[todo]` A value status enum (`ok | warn | bad | missing`) so a measurement can carry a verdict without inventing a finding. (free)
-- `[todo]` Table-shaped metrics with a row cap plus a "showing N of M" count, for image lists, link lists, keyword lists, and the header tree. (free)
-- `[todo]` Renderers updated: metrics tables in HTML and Markdown, full metrics in JSON. (module)
+- `[done]` `metrics` output alongside `findings`, per category, holding raw numbers and tables. (module)
+- `[done]` A value status enum (`ok | warn | bad | missing`) so a measurement can carry a verdict without inventing a finding. (free)
+- `[done]` Table-shaped metrics with a row cap plus a "showing N of M" count, for image lists, link lists, keyword lists, and the header tree. (free)
+- `[done]` Renderers updated: metrics tables in HTML and Markdown, full metrics in JSON. (module)
 - `[partial]` Score out of 100 exists. Keep it, and surface it as one headline number with the per-category breakdown underneath.
 
 ## 1.2 Page Basics As Values
 
-- `[todo]` HTTP status code reported as a value. (free)
-- `[todo]` Page size in KB, human readable. Measured today by `performance/html-weight`, never surfaced. (free)
-- `[todo]` Declared language value, not just a pass on `content/html-lang`. (free)
-- `[todo]` Published date and updated date, read from meta tags, JSON-LD, and article tags. (free)
-- `[todo]` Character counts returned for title, description, and H1, so a consumer can render "49 characters, recommended 30 to 60". (free)
-- `[todo]` H1 length rule with a 10 to 70 target, and H1 count reported as a value. (free)
-- `[todo]` Count of elements hidden with `display:none`, plus an option to include or exclude them from all text analysis. (free)
+- `[done]` HTTP status code reported as a value. (free)
+- `[done]` Page size in KB, human readable. Measured today by `performance/html-weight`, never surfaced. (free)
+- `[done]` Declared language value, not just a pass on `content/html-lang`. (free)
+- `[done]` Published date and updated date, read from meta tags, JSON-LD, and article tags. (free)
+- `[done]` Character counts returned for title, description, and H1, so a consumer can render "49 characters, recommended 30 to 60". (free)
+- `[done]` H1 length rule with a 10 to 70 target, and H1 count reported as a value. (free)
+- `[partial]` Count of elements hidden with `display:none` is reported. The option to include or exclude them from text analysis lands with the phase 2 text module, which is the thing that would read it. (free)
 
 ## 1.3 Markup Hygiene Counters
 
-- `[todo]` Inline `style` attribute count. (free)
-- `[todo]` `<style>` blocks inside `<body>` count. (free)
-- `[todo]` `<script>` tag count. (free)
-- `[todo]` HTML comment node count. (free)
-- `[todo]` Placeholder link count (`<a href="#">`). (free)
+- `[done]` Inline `style` attribute count. (free)
+- `[done]` `<style>` blocks inside `<body>` count. (free)
+- `[done]` `<script>` tag count. (free)
+- `[done]` HTML comment node count. (free)
+- `[done]` Placeholder link count (`<a href="#">`). (free)
 
 ## 1.4 Index And Directive Values
 
-- `[partial]` Robots meta, X-Robots-Tag, canonical, hreflang, and robots.txt all have rules. Surface their resolved values too. (free)
-- `[todo]` Canonical match: does the canonical equal the URL actually audited. (free)
+- `[done]` Robots meta, X-Robots-Tag, canonical, hreflang, and robots.txt all have rules. Their resolved values are reported too. (free)
+- `[done]` Canonical match: does the canonical equal the URL actually audited. (free)
 
 ## 1.5 Link Tables
 
-- `[todo]` Link counters as values: internal, external, dofollow, nofollow, duplicate. (free)
-- `[todo]` Dofollow link table: URL, anchor text, occurrence count, internal or external. (free)
-- `[todo]` Nofollow link table, same shape. (free)
-- `[todo]` Duplicate link table: one row per URL with every distinct anchor used for it and the total count. The most useful single table for internal linking cleanup. (free)
+- `[done]` Link counters as values: internal, external, dofollow, nofollow, duplicate. (free)
+- `[done]` Dofollow link table: URL, anchor text, occurrence count, internal or external. (free)
+- `[done]` Nofollow link table, same shape. (free)
+- `[done]` Duplicate link table: one row per URL with every distinct anchor used for it and the total count. The most useful single table for internal linking cleanup. (free)
 
 ## 1.6 Header Structure
 
-- `[todo]` Header count per level, H1 through H6. (free)
-- `[todo]` Header structure tree in document order, with nesting depth and heading text. (free)
-- `[todo]` Per-heading child-element counts, for example "IMG: 1, UL: 1", so a reader sees which sections carry media or lists. (free)
+- `[done]` Header count per level, H1 through H6. (free)
+- `[done]` Header structure tree in document order, with nesting depth and heading text. (free)
+- `[done]` Per-heading child-element counts, for example "IMG: 1, UL: 1", so a reader sees which sections carry media or lists. (free)
 
 ## 1.7 Meta Tables
 
-- `[partial]` `core-seo/open-graph-basics` checks three tags. Report the full table with per-property status: og:title, og:description, og:image, og:url, og:type, og:site_name, og:locale. (free)
-- `[partial]` `social-media/twitter-card` exists. Extend it to a full table: twitter:card, twitter:title, twitter:description, twitter:image, twitter:site, twitter:creator. (free)
-- `[todo]` Image alt coverage as a pair of counts, with-alt versus without-alt. (free)
-- `[todo]` HTTP image count reported as its own number for the mixed-content section. (free)
+- `[done]` `core-seo/open-graph-basics` checks three tags. The full table is reported with per-property state: og:title, og:description, og:image, og:url, og:type, og:site_name, og:locale. (free)
+- `[done]` `social-media/twitter-card` exists. The full table is reported: twitter:card, twitter:title, twitter:description, twitter:image, twitter:site, twitter:creator. (free)
+- `[done]` Image alt coverage as a pair of counts, with-alt versus without-alt. (free)
+- `[done]` HTTP image count reported as its own number for the mixed-content section. (free)
 
 ---
 
@@ -368,7 +368,7 @@ This phase is the gate. Most of the backlog is measurements, and there is nowher
 
 Three things decide the order above.
 
-**Phase 1 is a hard gate.** Roughly sixty items on this list are measurements, and the report object has nowhere to put a measurement. Building any of them before the `metrics` output exists means building them twice.
+**Phase 1 was a hard gate, and it is done.** Roughly sixty items on this list are measurements, and the report object had nowhere to put one. Shipped in 1.0.2: `metrics` beside `findings`, a `ValueStatus` that never touches the score, capped tables, all three renderers, and a public `collectors` registry. Everything after this builds on that shape rather than inventing its own.
 
 **Phase 2 is one module, four features.** The tokenizer with stop words, lemmas, and n-grams pays for text statistics, the top-words table, the relevance matrix, heading keyword highlights, and a rewrite of the keyword-stuffing rule. It is the best ratio on the list.
 

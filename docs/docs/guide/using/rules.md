@@ -1,24 +1,26 @@
 ---
 title: Rule catalog
-description: All 93 checks across 15 categories, with rule ids and severities.
+description: All 94 checks across 15 categories, with rule ids and severities.
 ---
 
 # Rule catalog
 
-93 rules across 15 categories. Thirteen categories need nothing but the fetched HTML and response headers. Two, links and images, make extra requests. Accessibility and the Core Web Vitals half of performance need a [rendered page](/guide/using/rendered-checks).
+94 rules across 15 categories. Thirteen categories need nothing but the fetched HTML and response headers. Two, links and images, make extra requests. Accessibility and the Core Web Vitals half of performance need a [rendered page](/guide/using/rendered-checks).
 
 Every rule id is `category/name`, and the category half is what `only` and `skip` accept.
 
 ```ts
 import { allRules, selectRules } from "safi-studio-scanner";
 
-console.log(allRules.length); // 93
+console.log(allRules.length); // 94
 const security = selectRules(allRules, ["security"]);
 ```
 
+Rules are only half of a report. The numbers that sit alongside them are in the [measurement catalog](/guide/using/measurements).
+
 ## Core SEO
 
-10 rules. The checks a search engine reads first.
+11 rules. The checks a search engine reads first.
 
 | Rule | Title | Severity |
 | --- | --- | --- |
@@ -27,6 +29,7 @@ const security = selectRules(allRules, ["security"]);
 | `core-seo/meta-description-present` | Meta description present | error |
 | `core-seo/meta-description-length` | Meta description length | warning |
 | `core-seo/single-h1` | Exactly one H1 | warning |
+| `core-seo/h1-length` | H1 length | info |
 | `core-seo/canonical-present` | Canonical URL present | warning |
 | `core-seo/charset-declared` | Charset declared | warning |
 | `core-seo/viewport-present` | Viewport meta present | warning |

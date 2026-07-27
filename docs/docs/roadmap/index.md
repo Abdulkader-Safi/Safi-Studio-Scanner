@@ -5,7 +5,7 @@ description: What ships today, what is being built next, and the eleven phases p
 
 # Roadmap
 
-Eleven phases, ordered so each one unlocks the next. Phase 0 is what you can install today. Nothing beyond it is in the published package yet.
+Eleven phases, ordered so each one unlocks the next. Phase 0 and phase 1 are what you can install today. Nothing beyond them is in the published package yet.
 
 | Stage | Status |
 | --- | --- |
@@ -15,8 +15,8 @@ Eleven phases, ordered so each one unlocks the next. Phase 0 is what you can ins
 
 <div className="sc-progress">
   <span className="sc-progress__seg sc-progress__seg--done" title="Phase 0: shipped"></span>
-  <span className="sc-progress__seg sc-progress__seg--now" title="Phase 1: in progress"></span>
-  <span className="sc-progress__seg"></span>
+  <span className="sc-progress__seg sc-progress__seg--done" title="Phase 1: shipped in 1.0.2"></span>
+  <span className="sc-progress__seg sc-progress__seg--now" title="Phase 2: in progress"></span>
   <span className="sc-progress__seg"></span>
   <span className="sc-progress__seg"></span>
   <span className="sc-progress__seg"></span>
@@ -27,13 +27,13 @@ Eleven phases, ordered so each one unlocks the next. Phase 0 is what you can ins
   <span className="sc-progress__seg"></span>
 </div>
 
-<p className="sc-progress__caption">1 of 11 phases shipped · 1 in progress · 9 planned</p>
+<p className="sc-progress__caption">2 of 11 phases shipped · 1 next · 8 planned</p>
 
 The full item-by-item backlog, with a build-cost tag on every line, lives in [`features.md`](https://github.com/Abdulkader-Safi/Safi-Studio-Scanner/blob/main/features.md) in the repository. This page is the summary.
 
 ## Phase 0: Shipped
 
-The engine as published: 93 rules across 15 categories.
+The engine as published: 94 rules across 15 categories.
 
 <div className="sc-list sc-list--done">
 
@@ -51,38 +51,40 @@ The engine as published: 93 rules across 15 categories.
 
 ## Phase 1: Report foundation and free measurements
 
-<p className="sc-phase sc-phase--now">In progress · next up</p>
+<p className="sc-phase sc-phase--done">Shipped in 1.0.2</p>
 
-The gate everything else waits on.
+The gate everything else waited on.
 
-Most of what a page audit is expected to report are measurements, not verdicts: counts, tables, percentages. The report object holds only pass and fail findings today, so there is nowhere to put them. Building any of the later phases before this exists means building them twice.
+Most of what a page audit is expected to report are measurements, not verdicts: counts, tables, percentages. The report object held only pass and fail findings, so there was nowhere to put them. Building any later phase first would have meant building it twice.
 
-<div className="sc-list sc-list--now">
+<div className="sc-list sc-list--done">
 
 - A `metrics` output beside `findings`, per category, carrying numbers and tables.
-- A value status of `ok`, `warn`, `bad`, or `missing`, so a measurement can carry a verdict without inventing a finding.
-- Capped tables with a "showing N of M" count, for images, links, keywords, and the header tree.
-- A public `rules` option, so a custom rule array can be passed to `audit()` without forking.
+- A value status of `ok`, `warn`, `bad`, or `missing`, so a measurement carries a verdict without inventing a finding.
+- Capped tables with a "showing N of M" count.
+- Metrics rendered in all three formats.
+- Public `rules` and `collectors` options, so a custom registry no longer needs a fork.
 
 </div>
 
-Then everything already sitting in the parsed DOM gets harvested:
+Everything already sitting in the parsed DOM is now harvested. All of it is in the [measurement catalog](/guide/using/measurements).
 
-<div className="sc-list sc-list--now">
+<div className="sc-list sc-list--done">
 
-- Status code, page size, declared language, and published and updated dates as reported values.
+- Status code, response time, page size, declared language, hidden element count, and published and updated dates as reported values.
 - Markup hygiene counters: inline styles, `<style>` blocks in the body, script tags, comment nodes, placeholder links.
-- Canonical match: does the canonical equal the URL that was actually audited.
+- Resolved crawl directives, including whether the canonical equals the URL that was actually audited.
 - Link counters and three link tables: dofollow, nofollow, and duplicate URLs with every anchor used for each.
-- Header counts per level and the full header tree in document order.
-- The complete Open Graph and Twitter Card tables, with a status per property.
-- Character counts for title, description, and H1, plus an H1 length check.
+- Header counts per level and the full heading outline in document order, with what each section contains.
+- The complete Open Graph and Twitter Card tables, with a state per property.
+- Image alt coverage, separating decorative from undescribed.
+- Character counts for title, description, and H1, plus an H1 length rule.
 
 </div>
 
 ## Phase 2: Text, keyword, and readability engine
 
-<p className="sc-phase">Planned · not started</p>
+<p className="sc-phase sc-phase--now">Next up</p>
 
 One module that pays for four report sections.
 

@@ -101,7 +101,7 @@ await writeFile("report.md", render(report, "md"));
 const allRules: Rule[];
 ```
 
-Every built-in rule, in registration order. 93 of them.
+Every built-in rule, in registration order. 94 of them.
 
 ```ts
 console.log(allRules.length);
@@ -120,6 +120,43 @@ Filters a rule array by category. `only` is applied first, then `skip` removes f
 const chosen = selectRules(allRules, undefined, ["links", "images"]);
 console.log(`${chosen.length} rules will run`);
 ```
+
+It is generic over anything with a `category`, so it filters collectors too.
+
+## allCollectors
+
+```ts
+const allCollectors: Collector[];
+```
+
+Every built-in measurement collector. A collector returns numbers rather than verdicts; see the [measurement catalog](/guide/using/measurements) for what each one reports.
+
+```ts
+import { allCollectors, selectRules } from "safi-studio-scanner";
+
+const linkMetrics = selectRules(allCollectors, ["links"]);
+```
+
+## value and table
+
+```ts
+function value(
+  id: string,
+  label: string,
+  v: string | number | null,
+  opts?: { unit?: string; status?: ValueStatus; note?: string },
+): MetricInput;
+
+function table(
+  id: string,
+  label: string,
+  columns: string[],
+  rows: MetricCell[][],
+  opts?: { cap?: number; status?: ValueStatus; note?: string },
+): MetricInput;
+```
+
+The helpers a collector builds its output with. `table` applies the row cap (25 by default) and records the true row count, so a renderer can print "showing 25 of 340". See [writing a collector](/guide/using/custom-rules#writing-a-collector).
 
 ## DEFAULTS
 

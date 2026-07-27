@@ -9,7 +9,7 @@ export default defineConfig({
   // 6px tracking. The full name is carried by the hero and the closing band.
   title: 'Scanner',
   description:
-    'Website audit engine for Node.js. Crawls a site, runs 93 checks across 15 categories, and returns a scored report as HTML, Markdown, or JSON.',
+    'Website audit engine for Node.js. Crawls a site, runs 94 checks across 15 categories, and returns a scored report as HTML, Markdown, or JSON.',
   lang: 'en',
   icon: '/favicon.svg',
   head: [
@@ -28,7 +28,7 @@ export default defineConfig({
       'meta',
       {
         property: 'og:image:alt',
-        content: '93 checks, one score, every page. Safi Studio Scanner.',
+        content: '94 checks, one score, every page. Safi Studio Scanner.',
       },
     ],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
