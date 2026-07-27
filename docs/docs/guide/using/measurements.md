@@ -64,6 +64,24 @@ Hidden elements are counted from inline styles only. There is no CSS cascade in 
 
 A canonical that points elsewhere is `warn`, not `bad`. It is the correct thing to do on a paginated or filtered page, and only you know which this is.
 
+## Links
+
+| Metric | Shape | Reports |
+| --- | --- | --- |
+| `links/total` | value | Every anchor on the page. The note splits internal, external, and any href that would not resolve. |
+| `links/internal-count` | value | Same-origin links. |
+| `links/external-count` | value | Links off the origin. |
+| `links/dofollow-count` | value | Links without `rel="nofollow"`. |
+| `links/nofollow-count` | value | Links with it. |
+| `links/duplicate-count` | value | URLs linked more than once from this page. |
+| `links/dofollow-table` | table | URL, anchor, scope. |
+| `links/nofollow-table` | table | Same shape. |
+| `links/duplicate-table` | table | One row per URL, with every distinct anchor used for it, the count, and the scope. |
+
+The duplicate table is the one to read. It is sorted by count, and it answers a question no per-link list can: this page links `/pricing` three times, once as "Pricing", once as "pricing page", once as "the plans". That is either a deliberate spread of anchor text or an accident, and seeing them on one row is what tells you which.
+
+All three tables are omitted when the page has no links of that kind.
+
 ## Internationalization
 
 | Metric | Shape | Reports |

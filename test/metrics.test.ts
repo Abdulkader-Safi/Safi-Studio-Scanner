@@ -146,6 +146,46 @@ test("hreflang alternates come back as a table, and only when there are any", as
   assert.equal(without.has("internationalization/hreflang-table"), false);
 });
 
+test("link counters split the page by scope and by rel", async () => {
+  const m = await metricsFor("links.html", "https://example.com/links");
+  assert.equal(val(m.get("links/total")).value, 8);
+  assert.equal(val(m.get("links/internal-count")).value, 5);
+  assert.equal(val(m.get("links/external-count")).value, 3);
+  assert.equal(val(m.get("links/dofollow-count")).value, 6);
+  assert.equal(val(m.get("links/nofollow-count")).value, 2);
+  assert.equal(val(m.get("links/total")).note, "5 internal, 3 external");
+});
+
+test("the duplicate table groups every anchor used for one URL", async () => {
+  const m = await metricsFor("links.html", "https://example.com/links");
+  assert.equal(val(m.get("links/duplicate-count")).value, 3);
+  const t = m.get("links/duplicate-table") as MetricTable;
+  // Most-linked first: /pricing three times under three different anchors.
+  assert.deepEqual(t.rows[0], [
+    "https://example.com/pricing",
+    "Pricing · pricing page · the plans",
+    3,
+    "internal",
+  ]);
+  assert.deepEqual(t.rows[1], ["https://example.com/about", "About", 2, "internal"]);
+});
+
+test("nofollow links are split out of the dofollow table", async () => {
+  const m = await metricsFor("links.html", "https://example.com/links");
+  const no = m.get("links/nofollow-table") as MetricTable;
+  assert.equal(no.rows.length, 2);
+  assert.ok(no.rows.every((r) => String(r[0]).includes("partner.example.org")));
+  const yes = m.get("links/dofollow-table") as MetricTable;
+  assert.ok(!yes.rows.some((r) => String(r[0]).includes("partner.example.org")));
+});
+
+test("link tables are omitted when a page has no links of that kind", async () => {
+  const m = await metricsFor("good.html", "https://example.com/good");
+  assert.equal(m.has("links/nofollow-table"), false);
+  assert.equal(m.has("links/duplicate-table"), false);
+  assert.equal(val(m.get("links/duplicate-count")).status, "ok");
+});
+
 test("a table caps its rows but keeps the true total", () => {
   const rows = Array.from({ length: 40 }, (_, i) => [`row ${i}`]);
   const t = table("x/y", "Many", ["Col"], rows) as MetricTable;
