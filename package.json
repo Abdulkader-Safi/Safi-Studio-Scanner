@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "example": "tsc && node examples/html-report.mjs",
     "test": "node --test --import tsx \"test/*.test.ts\"",
     "prepare": "tsc"
   },

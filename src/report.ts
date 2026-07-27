@@ -250,119 +250,153 @@ ${rows}
     .join("\n");
 
   return `<!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Audit report for ${esc(r.startUrl)}</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap');
+<title>Audit report for ${esc(r.startUrl)}</title><style>
+/* The brand layer, lifted from the documentation theme so an exported report
+   and the docs read as one system.
+
+   Near-black canvas, one accent, flat surfaces. Yellow carries the score and
+   every section label; nothing else competes with it. Depth comes from a
+   surface step (#0b0e11 -> #1e2329), never from a shadow or a gradient.
+
+   Two type roles, and they do not swap:
+     nova -> headings, prose, labels, everything read as language
+     plex -> numbers only. Scores, counts, ids. Always tabular.
+
+   Dark only, because the system has no light mode. The page closes on a light
+   band the way the product does. */
 :root {
-  --bg:#0c0b0a; --surface:#16140f; --text:#f5f2ea; --muted:#8d887e;
-  --line:rgba(245,242,234,0.12); --line-strong:rgba(245,242,234,0.22); --clay:#d97a4f;
-  --pass:#7fa37a; --fail:#d0644e; --warn:#d97a4f; --info:#8d887e;
-}
-[data-theme="light"] {
-  --bg:#f4f1ea; --surface:#fbf9f3; --text:#1a1611; --muted:#6b6358;
-  --line:rgba(26,22,17,0.14); --line-strong:rgba(26,22,17,0.26); --clay:#c75c33;
-  --pass:#4f7a4a; --fail:#b3472f; --warn:#c75c33; --info:#6b6358;
+  --nova: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --plex: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', 'Cascadia Mono', Menlo, monospace;
+
+  --primary:#fcd535; --primary-active:#f0b90b; --on-primary:#181a20;
+  --canvas:#0b0e11; --card:#1e2329; --elevated:#2b3139; --line:#2b3139;
+  --ink:#ffffff; --body:#eaecef; --muted-strong:#929aa5; --muted:#707a8a;
+  --up:#0ecb81; --down:#f6465d; --info:#3b82f6;
+
+  --soft-light:#fafafa; --line-light:#eaecef; --ink-dark:#181a20;
+  --body-light:#474d57; --muted-light:#5e6673;
 }
 * { box-sizing:border-box; }
+html { background:var(--canvas); }
 body {
-  /* One measure, centred at every width. Without the auto margins the column
-     hugs the left edge of a wide screen and the page reads as unplaced. */
-  margin:0 auto; padding:56px clamp(20px,6vw,96px) 96px; background:var(--bg); color:var(--text);
-  font-family:Inter,system-ui,sans-serif; line-height:1.5; max-width:980px;
+  margin:0; background:var(--canvas); color:var(--body);
+  font-family:var(--nova); font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
 }
-h1,h2 { font-family:'Space Grotesk',system-ui,sans-serif; font-weight:700; letter-spacing:-0.02em; }
-.mono { font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; }
-.kicker {
-  font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; font-weight:500;
-  letter-spacing:0.3em; text-transform:uppercase; color:var(--clay);
+/* One measure, centred at every width. */
+.page { max-width:1040px; margin:0 auto; padding:56px clamp(20px,5vw,48px) 96px; }
+.num { font-family:var(--plex); font-variant-numeric:tabular-nums; }
+
+/* Section labels. Accent, sentence case, no tracked-out caps: the label is
+   read as language, so it is set in the text face like everything else. */
+.kicker { font-size:13px; font-weight:500; color:var(--primary); }
+
+header { padding-top:12px; }
+header h1 {
+  font-family:var(--nova); font-size:clamp(36px,5.4vw,64px); font-weight:700;
+  line-height:1.1; letter-spacing:-1px; color:var(--ink); margin:14px 0 12px;
 }
-.topbar { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
-.toggle {
-  font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; letter-spacing:0.1em;
-  text-transform:uppercase; color:var(--muted); background:transparent; cursor:pointer;
-  border:1px solid var(--line-strong); border-radius:999px; padding:8px 16px;
+header a.url { color:var(--primary); text-decoration:none; word-break:break-all; font-size:15px; }
+header a.url:hover { color:var(--primary-active); }
+.score {
+  font-family:var(--plex); font-variant-numeric:tabular-nums; font-weight:700;
+  font-size:clamp(48px,7vw,72px); line-height:1; letter-spacing:-1px;
+  color:var(--primary); margin:28px 0 8px;
 }
-.toggle:hover { color:var(--text); border-color:var(--clay); }
-header h1 { font-size:clamp(40px,7vw,68px); line-height:0.95; margin:18px 0 14px; }
-header a.url { color:var(--clay); text-decoration:none; word-break:break-all; }
-header a.url:hover { text-decoration:underline; }
-.score { font-family:'Space Grotesk',system-ui,sans-serif; font-weight:700; font-size:84px; line-height:1; margin:24px 0 6px; }
-.score .slash { color:var(--muted); font-size:34px; }
-.meta { color:var(--muted); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px; }
-.cat { margin-top:64px; }
-.cat-score { font-family:'Space Grotesk',system-ui,sans-serif; font-weight:700; font-size:30px; margin:8px 0 18px; }
-.cat-score .slash { color:var(--muted); font-size:16px; }
-.rows { border-top:1px solid var(--line); }
+.score .slash { color:var(--muted); font-size:0.4em; letter-spacing:0; }
+.meta { color:var(--muted); font-size:13px; }
+
+/* ---- category sections ---- */
+.cat { margin-top:64px; padding-top:56px; border-top:1px solid var(--line); }
+.cat-score {
+  font-family:var(--plex); font-variant-numeric:tabular-nums; font-weight:700;
+  font-size:40px; line-height:1.1; letter-spacing:-0.3px; color:var(--primary); margin:8px 0 0;
+}
+.cat-score .slash { color:var(--muted); font-size:0.4em; }
+/* Flat surface, colour-block separation. No border, no shadow. */
+.rows { background:var(--card); border-radius:12px; padding:2px 24px; margin-top:24px; }
 details.row { border-bottom:1px solid var(--line); }
+details.row:last-child { border-bottom:none; }
 details.row > summary {
-  list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px;
-  padding:16px 4px;
+  list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:14px 0;
 }
 details.row > summary::-webkit-details-marker { display:none; }
-.row .rn { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:13px; color:var(--muted); width:24px; flex:none; }
-.row .dot { width:9px; height:9px; border-radius:50%; flex:none; }
-.row.s-pass .dot { background:var(--pass); }
-.row.s-fail .dot { background:var(--fail); }
-.row.s-warn .dot { background:var(--warn); }
+.row .rn { font-family:var(--plex); font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); width:26px; flex:none; }
+.row .dot { width:8px; height:8px; border-radius:50%; flex:none; background:var(--muted); }
+.row.s-pass .dot { background:var(--up); }
+.row.s-fail .dot { background:var(--down); }
+.row.s-warn .dot { background:var(--primary); }
 .row.s-info .dot { background:var(--info); }
-.row .rt { font-family:'Space Grotesk',system-ui,sans-serif; font-weight:500; font-size:18px; flex:1; }
-.row .rm { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); flex:none; }
-.row.s-fail .rm, .row.s-warn .rm { color:var(--clay); }
+.row .rt { font-size:14px; font-weight:500; color:var(--ink); flex:1; }
+.row .rm { font-size:12px; color:var(--muted); flex:none; }
+.row.s-fail .rm { color:var(--down); }
+.row.s-warn .rm { color:var(--primary); }
 .row .chev { color:var(--muted); flex:none; transition:transform .15s ease; }
 details.row[open] .chev { transform:rotate(90deg); }
-.rb { padding:4px 4px 24px 40px; }
-.rb .lbl { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:6px; }
-.rb .fix { border-left:2px solid var(--clay); padding:2px 0 2px 16px; margin:16px 0; }
-.rb .pages { margin:16px 0 0; padding:0; list-style:none; }
+.rb { padding:2px 0 22px 42px; }
+.rb .lbl { font-size:12px; font-weight:500; color:var(--muted); display:block; margin-bottom:6px; }
+.rb .fix { background:var(--elevated); border-radius:8px; padding:12px 16px; margin:18px 0; }
+.rb .pages { margin:18px 0 0; padding:0; list-style:none; }
 .rb .pages li { padding:10px 0; border-top:1px solid var(--line); }
-.rb .pages a { color:var(--text); text-decoration:none; word-break:break-all; }
-.rb .pages a:hover { color:var(--clay); }
-.rb .pages .msg { display:block; color:var(--muted); font-size:14px; margin-top:2px; }
-.rb .pages code { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); word-break:break-all; }
-.rb .ok { color:var(--muted); }
-.measure { margin-top:72px; }
-details.mpage { border-bottom:1px solid var(--line); }
-details.mpage:first-of-type { border-top:1px solid var(--line); }
-details.mpage > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:16px 4px; }
+.rb .pages a { color:var(--body); text-decoration:none; word-break:break-all; }
+.rb .pages a:hover { color:var(--primary); }
+.rb .pages .msg { display:block; color:var(--muted-strong); margin-top:2px; }
+.rb .pages code { font-family:var(--plex); font-size:12px; color:var(--muted); word-break:break-all; }
+.rb .ok { color:var(--muted-strong); margin:0; }
+
+/* ---- measurements ---- */
+.measure { margin-top:64px; padding-top:56px; border-top:1px solid var(--line); }
+details.mpage { background:var(--card); border-radius:12px; padding:2px 24px; margin-top:24px; }
+details.mpage > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:14px 0; }
 details.mpage > summary::-webkit-details-marker { display:none; }
-details.mpage > summary .u { flex:1; word-break:break-all; }
+details.mpage > summary .u { flex:1; word-break:break-all; color:var(--ink); font-weight:500; }
 details.mpage[open] .chev { transform:rotate(90deg); }
-.mbody { padding:0 4px 28px; }
-.msub { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--clay); margin:28px 0 6px; }
-.mcap { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); margin:18px 0 6px; }
-.mwrap { overflow-x:auto; }
-table.m { width:100%; border-collapse:collapse; font-size:14px; }
-table.m th { text-align:left; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; font-weight:500; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); padding:8px 16px 8px 0; border-bottom:1px solid var(--line); white-space:nowrap; }
-table.m td { padding:10px 16px 10px 0; border-bottom:1px solid var(--line); vertical-align:top; word-break:break-word; }
-table.m td:last-child, table.m th:last-child { padding-right:0; }
-table.m td.val { font-family:'JetBrains Mono',ui-monospace,monospace; white-space:nowrap; }
+details.mpage[open] > summary { border-bottom:1px solid var(--line); }
+.mbody { padding:8px 0 24px; }
+.msub { font-size:13px; font-weight:500; color:var(--primary); margin:26px 0 10px; }
+.mcap { font-size:13px; color:var(--muted-strong); margin:20px 0 8px; }
+/* The frame lives on the wrapper, not the table: a collapsed table cannot clip
+   its own corners, so a radius set there is dead CSS and the corners stay square. */
+.mwrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+/* A floor, so a narrow screen scrolls the table sideways instead of crushing
+   "og:description" into three letters a line. */
+table.m { width:100%; min-width:520px; border-collapse:collapse; }
+table.m th {
+  font-size:12px; font-weight:500; color:var(--muted); text-align:left;
+  padding:12px 16px; background:var(--elevated); border-bottom:1px solid var(--line); white-space:nowrap;
+}
+table.m td { font-size:14px; color:var(--body); padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; word-break:break-word; }
+table.m tr:last-child td { border-bottom:none; }
+table.m td.val { font-family:var(--plex); font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--ink); }
 table.m td.note { color:var(--muted); font-size:13px; }
 /* Value tables share one grid across every category, so the columns read down
    the page instead of re-sizing themselves per section. */
-table.mv { table-layout:fixed; min-width:520px; }
+table.mv { table-layout:fixed; min-width:560px; }
 table.mv th:first-child, table.mv td:first-child { width:34%; }
 table.mv th:nth-child(2), table.mv td.val { width:22%; }
-.mdot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:9px; vertical-align:1px; background:var(--line-strong); }
-.mdot.v-ok { background:var(--pass); }
-.mdot.v-warn { background:var(--warn); }
-.mdot.v-bad { background:var(--fail); }
-.mdot.v-missing { background:var(--info); }
-footer { margin-top:96px; padding-top:32px; border-top:1px solid var(--line); text-align:center; color:var(--muted); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; }
-footer .colophon { margin:0 0 18px; }
-footer .flinks { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 28px; }
-footer a { color:var(--muted); text-decoration:none; }
-footer a:hover { color:var(--clay); }
+.mdot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:10px; vertical-align:1px; background:var(--muted); }
+.mdot.v-ok { background:var(--up); }
+.mdot.v-warn { background:var(--primary); }
+.mdot.v-bad { background:var(--down); }
+.mdot.v-missing { background:var(--muted); }
+
+/* ---- the closing band ---- */
+footer { background:var(--soft-light); padding:64px clamp(20px,5vw,48px); }
+.finner { max-width:1040px; margin:0 auto; text-align:center; }
+footer .colophon { font-size:15px; font-weight:600; color:var(--ink-dark); margin:0 0 6px; }
+footer .flead { font-size:13px; color:var(--muted-light); margin:0 0 26px; }
+footer .flinks { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 32px; }
+footer a { font-size:13px; font-weight:500; color:var(--body-light); text-decoration:none; }
+footer a:hover { color:var(--ink-dark); }
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="kicker">Website audit</div>
-  <button class="toggle" id="themeToggle" type="button">Light</button>
-</div>
+<div class="page">
+<div class="kicker">Website audit</div>
 <header>
   <h1>Audit report</h1>
   <a class="url" href="${esc(r.startUrl)}">${esc(r.startUrl)}</a>
@@ -371,28 +405,16 @@ footer a:hover { color:var(--clay); }
 </header>
 ${sections}
 ${measurements}
+</div>
 <footer>
-  <p class="colophon">MIT licensed. Built by Abdulkader Safi.</p>
-  <nav class="flinks">
-${FOOTER_LINKS.map((l) => `    <a href="${esc(tagged(l.href))}" rel="noopener">${esc(l.label)}</a>`).join("\n")}
-  </nav>
+  <div class="finner">
+    <p class="colophon">MIT licensed. Built by Abdulkader Safi.</p>
+    <p class="flead">Safi Studio Scanner, the website audit engine for Node.js.</p>
+    <nav class="flinks">
+${FOOTER_LINKS.map((l) => `      <a href="${esc(tagged(l.href))}" rel="noopener">${esc(l.label)}</a>`).join("\n")}
+    </nav>
+  </div>
 </footer>
-<script>
-(function () {
-  var root = document.documentElement, btn = document.getElementById('themeToggle');
-  var saved = null;
-  try { saved = localStorage.getItem('scanner-theme'); } catch (e) {}
-  if (saved) root.setAttribute('data-theme', saved);
-  function sync() { btn.textContent = root.getAttribute('data-theme') === 'dark' ? 'Light' : 'Dark'; }
-  sync();
-  btn.addEventListener('click', function () {
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('scanner-theme', next); } catch (e) {}
-    sync();
-  });
-})();
-</script>
 </body>
 </html>`;
 }

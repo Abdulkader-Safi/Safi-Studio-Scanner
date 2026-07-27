@@ -103,7 +103,7 @@ report.pages[0].metrics; // values and tables
 
 - **JSON** for pipelines and CI
 - **Markdown** for pasting into issues and docs
-- **HTML** as one self-contained file with inline styling and color-coded findings
+- **HTML** as one self-contained file, styled in the Scanner brand, with no external requests
 
 ## How it works
 

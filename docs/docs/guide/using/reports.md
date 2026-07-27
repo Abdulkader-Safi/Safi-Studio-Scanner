@@ -108,7 +108,9 @@ const json = render(report, "json");
 
 `render` is synchronous and takes a report you already have, so you can audit once and emit all three.
 
-**HTML** is one self-contained file. Inline styles, no external requests, no fonts to load. It is the format to hand to someone who will not read JSON. Findings are grouped by category and rule; measurements sit under their own section, one block per page.
+**HTML** is one self-contained file. Inline styles, no external requests, no webfonts, nothing to serve alongside it. It is the format to hand to someone who will not read JSON. Findings are grouped by category and rule; measurements sit under their own section, one block per page.
+
+It carries the same brand layer as this site: the near-black canvas, the one yellow accent on scores and section labels, flat card surfaces with no shadows, and the light band it closes on. Type follows the same two roles, the text face for anything read as language and a tabular mono for numbers only. There is no light mode, because the system does not have one.
 
 **Markdown** is per-category headings with a findings table and the score summary, then a measurements section per page. Good for pasting into an issue or a pull request comment.
 

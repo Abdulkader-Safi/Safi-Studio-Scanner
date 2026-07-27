@@ -74,7 +74,9 @@ test("html render is a self-contained themed document", () => {
   assert.match(out, /<!doctype html>/i);
   assert.match(out, /82/);
   assert.ok(!out.includes("<link "), "html should not pull external stylesheet files");
-  assert.match(out, /data-theme/, "html should support theme switching");
+  assert.ok(!out.includes("@import"), "html should not fetch webfonts either");
+  assert.match(out, /#fcd535/, "the accent is the brand yellow, as in the docs theme");
+  assert.match(out, /#0b0e11/, "on the brand canvas");
   assert.match(out, /<details class="row/, "issues should render as expandable rows");
   assert.match(out, /How to fix/, "failing rules should show remediation text");
 });
