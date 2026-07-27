@@ -36,6 +36,7 @@ const report = await audit("https://example.com", {
 | `format` | `"json" \| "md" \| "html"` | `"html"` | Only read by `render()` and the `auditTo*` helpers. `audit()` always returns the object. |
 | `rules` | `Rule[]` | `allRules` | Replaces the rule registry. Spread `allRules` in to keep the built-in set. |
 | `collectors` | `Collector[]` | `allCollectors` | Replaces the measurement registry. Same rule: spread `allCollectors` in. |
+| `onProgress` | `(e: AuditEvent) => void` | unset | Called as the audit runs. See [streaming progress](/guide/using/streaming). |
 
 ## Tuning the crawl
 

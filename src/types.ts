@@ -24,7 +24,86 @@ export interface AuditOptions {
   // your own rules or collectors, or to run a subset of the built-ins.
   rules?: Rule[];
   collectors?: Collector[];
+  /**
+   * Called as the audit runs. The primitive under `auditStream()`; reach for
+   * that instead unless you specifically want a callback.
+   */
+  onProgress?: (event: AuditEvent) => void;
 }
+
+// ---- Progress events ----
+//
+// One discriminated union, switched on `type`, in the shape the streaming SDKs
+// use. A run emits: audit_start, then page_fetched per page as the crawl finds
+// it, crawl_complete once the shape of the work is known, then check_complete
+// and page_complete as rules run, and finally audit_complete carrying the
+// report. Every event after crawl_complete can report progress out of a total.
+
+export interface AuditStartEvent {
+  type: "audit_start";
+  url: string;
+  maxPages: number;
+}
+export interface PageFetchedEvent {
+  type: "page_fetched";
+  url: string;
+  status: number;
+  depth: number;
+  /** 1-based, in the order the crawl found them. */
+  index: number;
+  ms: number;
+}
+export interface CrawlCompleteEvent {
+  type: "crawl_complete";
+  pages: number;
+  /** Rules that will actually run, so a counter has a denominator. */
+  checksTotal: number;
+  ms: number;
+}
+export interface RenderCompleteEvent {
+  type: "render_complete";
+  provider: "browser" | "psi";
+  rendered: number;
+  pages: number;
+  ms: number;
+}
+export interface CheckCompleteEvent {
+  type: "check_complete";
+  url: string;
+  ruleId: string;
+  status: Status;
+  checksDone: number;
+  checksTotal: number;
+}
+export interface PageCompleteEvent {
+  type: "page_complete";
+  url: string;
+  index: number;
+  pagesTotal: number;
+  score: number;
+  findings: number;
+  metrics: number;
+  ms: number;
+}
+export interface AuditCompleteEvent {
+  type: "audit_complete";
+  score: number;
+  pages: number;
+  checks: number;
+  ms: number;
+  report: AuditReport;
+}
+
+export type AuditEvent =
+  | AuditStartEvent
+  | PageFetchedEvent
+  | CrawlCompleteEvent
+  | RenderCompleteEvent
+  | CheckCompleteEvent
+  | PageCompleteEvent
+  | AuditCompleteEvent;
+
+export type AuditEventType = AuditEvent["type"];
 
 export interface RawResponse {
   url: string;

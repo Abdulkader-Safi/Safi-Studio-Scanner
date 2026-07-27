@@ -29,6 +29,32 @@ console.log(report.categories);   // score, pass, fail, warn per category
 
 By default it crawls up to 20 pages, 5 at a time, 3 levels deep from the start URL, and runs every static rule. Nothing is written to disk unless you write it.
 
+## Watching it work
+
+That first audit takes half a minute on a real site, and `audit()` prints nothing until it is finished. Swap in `auditStream()` to see what it is doing:
+
+```ts
+import { auditStream } from "safi-studio-scanner";
+
+const stream = auditStream("https://example.com");
+
+for await (const event of stream) {
+  if (event.type === "page_complete") {
+    console.log(`${event.index}/${event.pagesTotal}  ${event.url}  ${event.score}/100`);
+  }
+}
+
+const report = await stream.finalReport();
+```
+
+```
+1/20  https://example.com/           95/100
+2/20  https://example.com/pricing    88/100
+3/20  https://example.com/about      92/100
+```
+
+Same audit, same report at the end. See [streaming progress](/guide/using/streaming) for the full event list, a copy-paste terminal progress bar, and how to drive a UI from it.
+
 ## Write a report to disk
 
 The one-line helpers render the report for you.

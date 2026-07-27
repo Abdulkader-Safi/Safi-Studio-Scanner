@@ -42,7 +42,35 @@ const html = await auditToHtml("https://example.com"); // self-contained HTML st
 const score = await auditScore("https://example.com"); // just the 0-100 number
 ```
 
-Exported functions: `audit`, `auditToHtml`, `auditToMarkdown`, `auditScore`, and `render` (for turning a report into any format). `allRules`, `allCollectors`, `selectRules`, and the collector helpers `value` and `table` are exported too, and every type (`AuditReport`, `Finding`, `Rule`, `Metric`, ...). The package is ESM.
+### Watching it run
+
+A twenty-page crawl takes half a minute, and `audit()` says nothing until it is done. `auditStream()` runs the same audit and reports progress as it goes.
+
+```ts
+import { auditStream } from "safi-studio-scanner";
+
+const stream = auditStream("https://example.com", { maxPages: 20 });
+
+for await (const event of stream) {
+  if (event.type === "page_complete") {
+    console.log(`${event.index}/${event.pagesTotal}  ${event.url}  ${event.score}/100`);
+  }
+}
+
+const report = await stream.finalReport();
+```
+
+```
+1/20  https://example.com/           95/100
+2/20  https://example.com/pricing    88/100
+3/20  https://example.com/about      92/100
+```
+
+Every event has a `type`: `audit_start`, `page_fetched`, `crawl_complete`, `render_complete`, `check_complete`, `page_complete`, `audit_complete`. Switch on it in the loop, or subscribe with `.on("page_complete", handler)`. `check_complete` carries `checksDone` and `checksTotal` for a progress bar. The last event carries the report, and `finalReport()` returns the same object.
+
+Run `npm run example` for a working terminal progress bar. Full details in [streaming progress](https://safi-studio-scanner.abdulkadersafi.com/guide/using/streaming).
+
+Exported functions: `audit`, `auditStream`, `auditToHtml`, `auditToMarkdown`, `auditScore`, and `render` (for turning a report into any format). `allRules`, `allCollectors`, `selectRules`, and the collector helpers `value` and `table` are exported too, and every type (`AuditReport`, `Finding`, `Rule`, `Metric`, ...). The package is ESM.
 
 ### Options
 

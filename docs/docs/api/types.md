@@ -42,12 +42,15 @@ interface AuditOptions {
   psiMaxPages: number;
   rules?: Rule[];
   collectors?: Collector[];
+  onProgress?: (event: AuditEvent) => void;
 }
 ```
 
 `audit()` takes a `Partial<AuditOptions>` and fills the gaps from `DEFAULTS`. See [configuration](/guide/start/configuration) for what each one does.
 
 `rules` and `collectors` replace the built-in registries when set. Leave them out and `allRules` and `allCollectors` run.
+
+`onProgress` is the callback form of [streaming](/guide/using/streaming). `auditStream()` is built on it.
 
 ## AuditReport
 
@@ -171,6 +174,27 @@ interface MetricTable {
 ```
 
 `rows.length < total` means the table was capped, and every renderer prints "showing 25 of 340" rather than pretending it showed everything.
+
+## AuditEvent
+
+What [`auditStream()`](/guide/using/streaming) yields. One discriminated union, switched on `type`.
+
+```ts
+type AuditEvent =
+  | { type: "audit_start"; url: string; maxPages: number }
+  | { type: "page_fetched"; url: string; status: number; depth: number; index: number; ms: number }
+  | { type: "crawl_complete"; pages: number; checksTotal: number; ms: number }
+  | { type: "render_complete"; provider: "browser" | "psi"; rendered: number; pages: number; ms: number }
+  | { type: "check_complete"; url: string; ruleId: string; status: Status; checksDone: number; checksTotal: number }
+  | { type: "page_complete"; url: string; index: number; pagesTotal: number; score: number; findings: number; metrics: number; ms: number }
+  | { type: "audit_complete"; score: number; pages: number; checks: number; ms: number; report: AuditReport };
+
+type AuditEventType = AuditEvent["type"];
+```
+
+Each member is exported individually too (`PageCompleteEvent`, `CheckCompleteEvent`, and so on), and `AuditEventOf<"page_complete">` narrows the union by type.
+
+`index` counts from 1. `checksTotal` is fixed once `crawl_complete` fires and excludes browser-only rules when nothing was rendered, so a progress bar built on `checksDone / checksTotal` always reaches 100%.
 
 ## Collector
 

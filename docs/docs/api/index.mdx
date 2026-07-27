@@ -108,6 +108,34 @@ console.log(allRules.length);
 console.log(new Set(allRules.map((r) => r.category)).size); // 15
 ```
 
+## auditStream
+
+```ts
+function auditStream(url: string, options?: Partial<AuditOptions>): AuditStream;
+
+class AuditStream implements AsyncIterable<AuditEvent> {
+  on<T extends AuditEventType>(type: T, handler: (event: AuditEventOf<T>) => void): this;
+  on(type: "event", handler: (event: AuditEvent) => void): this;
+  off(type: string, handler: (event: never) => void): this;
+  finalReport(): Promise<AuditReport>;
+  [Symbol.asyncIterator](): AsyncIterator<AuditEvent>;
+}
+```
+
+Runs the same audit as `audit()` and reports progress while it does. The audit starts on the call, not on the first read.
+
+```ts
+const stream = auditStream("https://example.com", { maxPages: 20 });
+for await (const event of stream) {
+  if (event.type === "page_complete") console.log(event.index, event.url);
+}
+const report = await stream.finalReport();
+```
+
+Iterating and `.on()` can be used together, and both see every event. `finalReport()` resolves with the same object the `audit_complete` event carries; awaiting it without iterating runs the audit exactly as `audit()` would. A failed audit throws from the iterator and rejects `finalReport()`.
+
+See [streaming progress](/guide/using/streaming) for the event list and worked examples.
+
 ## selectRules
 
 ```ts

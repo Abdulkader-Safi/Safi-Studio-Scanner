@@ -64,6 +64,7 @@ Every check returns one or more findings. A finding is small and flat on purpose
 
 - [Getting started](/guide/start/getting-started) to install and run your first audit.
 - [Configuration](/guide/start/configuration) for every option.
+- [Streaming progress](/guide/using/streaming) to watch an audit as it runs instead of waiting on it.
 - [Rule catalog](/guide/using/rules) for all 94 checks.
 - [Measurement catalog](/guide/using/measurements) for the numbers a report carries alongside them.
 - [Roadmap](/roadmap/) for what is in progress and what comes next.

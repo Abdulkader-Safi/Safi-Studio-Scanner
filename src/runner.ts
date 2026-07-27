@@ -23,6 +23,8 @@ export async function runPage(
   rules: Rule[],
   checkUrl: (url: string) => Promise<LinkStatus>,
   collectors: Collector[] = [],
+  /** Fired once per rule, so a caller can count checks as they finish. */
+  onCheck?: (ruleId: string, status: Status) => void,
 ): Promise<PageReport> {
   const ctx: RuleContext = { page, site, checkUrl };
   const findings: Finding[] = [];
@@ -45,6 +47,9 @@ export async function runPage(
         fix: r.fix ?? rule.fix,
       });
     }
+    // One event per rule, not per finding: a rule that reports forty broken
+    // links is still one check off the total.
+    onCheck?.(rule.id, worstStatus(results));
   }
   return {
     url: page.url,
@@ -53,6 +58,14 @@ export async function runPage(
     findings,
     metrics: await collectPage(ctx, collectors),
   };
+}
+
+const WORST: Record<Status, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
+
+function worstStatus(results: { status: Status }[]): Status {
+  let worst: Status = "pass";
+  for (const r of results) if (WORST[r.status] < WORST[worst]) worst = r.status;
+  return worst;
 }
 
 async function collectPage(ctx: RuleContext, collectors: Collector[]): Promise<Metric[]> {

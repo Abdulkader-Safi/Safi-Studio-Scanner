@@ -16,6 +16,8 @@ export async function crawl(
   startUrl: string,
   opts: AuditOptions,
   pool: <T>(fn: () => Promise<T>) => Promise<T>,
+  /** Fired as each page lands, so a caller can report progress mid-crawl. */
+  onPage?: (page: PageContext, index: number, ms: number) => void,
 ): Promise<PageContext[]> {
   const origin = new URL(startUrl).origin;
   const seen = new Set<string>([normalize(startUrl)]);
@@ -28,15 +30,21 @@ export async function crawl(
     const built = await Promise.all(
       batch.map((item) =>
         pool(async () => {
+          const started = Date.now();
           const res = await fetchPage(item.url, opts);
-          return { ctx: buildPageContext(res, origin, item.depth), depth: item.depth };
+          return {
+            ctx: buildPageContext(res, origin, item.depth),
+            depth: item.depth,
+            ms: Date.now() - started,
+          };
         }),
       ),
     );
 
-    for (const { ctx, depth } of built) {
+    for (const { ctx, depth, ms } of built) {
       if (pages.length >= opts.maxPages) break;
       pages.push(ctx);
+      onPage?.(ctx, pages.length, ms);
       if (depth >= opts.maxDepth) continue;
       for (const link of ctx.links) {
         if (!link.internal || !link.absUrl) continue;

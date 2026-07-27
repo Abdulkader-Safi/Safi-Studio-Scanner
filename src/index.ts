@@ -16,6 +16,8 @@ import { render } from "./report.js";
 import type { AuditOptions, AuditReport } from "./types.js";
 
 export { audit, DEFAULTS, render };
+export { auditStream, AuditStream } from "./stream.js";
+export type { AuditEventOf } from "./stream.js";
 export { allRules, selectRules } from "./rules/index.js";
 export { allCollectors, value, table, inRange, upTo, clip, ROW_CAP } from "./metrics/index.js";
 export type {
@@ -36,6 +38,15 @@ export type {
   MetricInput,
   MetricCell,
   ValueStatus,
+  AuditEvent,
+  AuditEventType,
+  AuditStartEvent,
+  PageFetchedEvent,
+  CrawlCompleteEvent,
+  RenderCompleteEvent,
+  CheckCompleteEvent,
+  PageCompleteEvent,
+  AuditCompleteEvent,
   Format,
   Status,
   Severity,
