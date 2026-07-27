@@ -101,6 +101,51 @@ test("hidden elements are counted from inline styles and the hidden attribute", 
   assert.equal(val(m.get("content/hidden-elements")).value, 2);
 });
 
+test("markup hygiene counts what the document is made of", async () => {
+  const m = await metricsFor("directives.html", "https://example.com/directives");
+  assert.equal(val(m.get("content/inline-styles")).value, 2);
+  assert.equal(val(m.get("content/body-style-blocks")).value, 1);
+  assert.equal(val(m.get("content/html-comments")).value, 2, "head and body comments both count");
+  assert.equal(val(m.get("content/placeholder-links")).value, 2, '"#" and "" are both placeholders');
+  assert.equal(val(m.get("performance/script-tags")).value, 2);
+  assert.equal(val(m.get("performance/script-tags")).note, "1 external, 1 inline");
+});
+
+test("directives report their resolved values, not just a verdict", async () => {
+  const m = await metricsFor("directives.html", "https://example.com/directives");
+  assert.equal(val(m.get("crawlability/robots-meta")).value, "index, follow, max-snippet:-1");
+  assert.equal(val(m.get("crawlability/robots-meta")).status, "ok");
+  assert.equal(val(m.get("crawlability/x-robots-tag")).status, "missing");
+  assert.equal(
+    val(m.get("crawlability/canonical-url")).value,
+    "https://example.com/canonical-target",
+  );
+  assert.equal(val(m.get("crawlability/canonical-match")).value, "no");
+  assert.equal(val(m.get("crawlability/canonical-match")).status, "warn");
+});
+
+test("a canonical pointing at this page matches through trailing slashes", async () => {
+  const m = await metricsFor("good.html", "https://example.com/good/");
+  assert.equal(val(m.get("crawlability/canonical-match")).value, "yes");
+  assert.equal(val(m.get("crawlability/canonical-match")).status, "ok");
+});
+
+test("hreflang alternates come back as a table, and only when there are any", async () => {
+  const withAlts = await metricsFor("directives.html", "https://example.com/directives");
+  assert.equal(val(withAlts.get("internationalization/hreflang-count")).value, 3);
+  assert.equal(
+    val(withAlts.get("internationalization/hreflang-count")).status,
+    "ok",
+    "the en alternate resolves to this page, so it self-references",
+  );
+  const t = withAlts.get("internationalization/hreflang-table") as MetricTable;
+  assert.equal(t.kind, "table");
+  assert.deepEqual(t.rows[1], ["fr", "https://example.com/fr/directives"]);
+
+  const without = await metricsFor("good.html", "https://example.com/good");
+  assert.equal(without.has("internationalization/hreflang-table"), false);
+});
+
 test("a table caps its rows but keeps the true total", () => {
   const rows = Array.from({ length: 40 }, (_, i) => [`row ${i}`]);
   const t = table("x/y", "Many", ["Col"], rows) as MetricTable;

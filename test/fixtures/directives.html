@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- A comment in the head, so the counter has to walk past <body>. -->
+  <title>Directives fixture with a canonical pointing somewhere else</title>
+  <meta name="robots" content="index, follow, max-snippet:-1">
+  <link rel="canonical" href="https://example.com/canonical-target">
+  <link rel="alternate" hreflang="en" href="/directives">
+  <link rel="alternate" hreflang="fr" href="https://example.com/fr/directives">
+  <link rel="alternate" hreflang="x-default" href="https://example.com/directives">
+</head>
+<body>
+  <style>.late { color: red }</style>
+  <h1>Directives</h1>
+  <p style="margin:0">Inline styled paragraph.</p>
+  <p style="color:#333">Another one.</p>
+  <!-- A second comment. -->
+  <a href="#">Placeholder</a>
+  <a href="">Empty href</a>
+  <a href="/real">Real link</a>
+  <script>console.log("inline");</script>
+  <script src="/app.js"></script>
+</body>
+</html>
