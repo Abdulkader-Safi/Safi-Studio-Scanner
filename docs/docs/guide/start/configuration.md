@@ -34,6 +34,8 @@ const report = await audit("https://example.com", {
 | `psiKey` | `string` | unset | Use the PageSpeed Insights API instead of a local browser. Ignored when `browser` is `true`. |
 | `psiMaxPages` | `number` | `5` | How many pages to send to PageSpeed Insights. The API is rate limited, so this stays low. |
 | `format` | `"json" \| "md" \| "html"` | `"html"` | Only read by `render()` and the `auditTo*` helpers. `audit()` always returns the object. |
+| `rules` | `Rule[]` | `allRules` | Replaces the rule registry. Spread `allRules` in to keep the built-in set. |
+| `collectors` | `Collector[]` | `allCollectors` | Replaces the measurement registry. Same rule: spread `allCollectors` in. |
 
 ## Tuning the crawl
 

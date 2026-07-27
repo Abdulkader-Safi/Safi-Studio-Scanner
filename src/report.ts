@@ -1,4 +1,11 @@
-import type { AuditReport, Format, Status } from "./types.js";
+import type {
+  AuditReport,
+  Format,
+  Metric,
+  MetricTable,
+  MetricValue,
+  Status,
+} from "./types.js";
 
 export function render(report: AuditReport, format: Format): string {
   if (format === "json") return JSON.stringify(report, null, 2);
@@ -32,7 +39,69 @@ function renderMarkdown(r: AuditReport): string {
       lines.push(`| ${f.status} | ${f.ruleId} | ${escapePipe(f.message)} |`);
     lines.push("");
   }
+  for (const p of r.pages) {
+    if (p.metrics?.length) renderMetricsMarkdown(p.url, p.metrics, lines);
+  }
   return lines.join("\n");
+}
+
+function renderMetricsMarkdown(url: string, metrics: Metric[], lines: string[]): void {
+  lines.push(`## Measurements for ${url}`, "");
+  for (const [cat, ms] of groupMetrics(metrics)) {
+    lines.push(`### ${CAT_NAMES[cat] || cat}`, "");
+    const values = ms.filter(isValue);
+    if (values.length) {
+      lines.push("| Metric | Value | Status | Note |", "| --- | --- | --- | --- |");
+      for (const v of values)
+        lines.push(
+          `| ${escapePipe(v.label)} | ${escapePipe(formatValue(v))} | ${v.status ?? "-"} | ${escapePipe(v.note ?? "")} |`,
+        );
+      lines.push("");
+    }
+    for (const t of ms.filter(isTable)) {
+      lines.push(`**${escapePipe(t.label)}**${rowCaption(t)}`, "");
+      if (t.rows.length === 0) {
+        lines.push("None found.", "");
+        continue;
+      }
+      lines.push(
+        `| ${t.columns.map(escapePipe).join(" | ")} |`,
+        `| ${t.columns.map(() => "---").join(" | ")} |`,
+      );
+      for (const row of t.rows)
+        lines.push(`| ${row.map((c) => escapePipe(String(c))).join(" | ")} |`);
+      lines.push("");
+    }
+  }
+}
+
+function isValue(m: Metric): m is MetricValue {
+  return m.kind === "value";
+}
+function isTable(m: Metric): m is MetricTable {
+  return m.kind === "table";
+}
+
+function formatValue(m: MetricValue): string {
+  if (m.value === null || m.value === "") return "—";
+  return m.unit ? `${m.value} ${m.unit}` : String(m.value);
+}
+
+function rowCaption(t: MetricTable): string {
+  return t.rows.length < t.total ? ` (showing ${t.rows.length} of ${t.total})` : "";
+}
+
+/** Metrics in category order, matching the category sections above them. */
+function groupMetrics(metrics: Metric[]): [string, Metric[]][] {
+  const byCat = new Map<string, Metric[]>();
+  for (const m of metrics) {
+    if (!byCat.has(m.category)) byCat.set(m.category, []);
+    byCat.get(m.category)!.push(m);
+  }
+  return [
+    ...CAT_ORDER.filter((c) => byCat.has(c)),
+    ...[...byCat.keys()].filter((c) => !CAT_ORDER.includes(c)).sort(),
+  ].map((c) => [c, byCat.get(c)!]);
 }
 
 function escapePipe(s: string): string {
@@ -142,6 +211,14 @@ function renderHtml(r: AuditReport): string {
   ];
   const scoreByCat = new Map(r.categories.map((c) => [c.category, c.score]));
 
+  const measured = r.pages.filter((p) => p.metrics?.length);
+  const measurements = measured.length
+    ? `<section class="measure">
+  <div class="kicker">Measurements</div>
+${measured.map((p) => renderPageMetrics(p.url, p.metrics, measured.length === 1)).join("\n")}
+</section>`
+    : "";
+
   const sections = catOrder
     .map((cat) => {
       const groups = byCat.get(cat)!;
@@ -229,6 +306,33 @@ details.row[open] .chev { transform:rotate(90deg); }
 .rb .pages .msg { display:block; color:var(--muted); font-size:14px; margin-top:2px; }
 .rb .pages code { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); word-break:break-all; }
 .rb .ok { color:var(--muted); }
+.measure { margin-top:72px; }
+details.mpage { border-bottom:1px solid var(--line); }
+details.mpage:first-of-type { border-top:1px solid var(--line); }
+details.mpage > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:16px; padding:16px 4px; }
+details.mpage > summary::-webkit-details-marker { display:none; }
+details.mpage > summary .u { flex:1; word-break:break-all; }
+details.mpage[open] .chev { transform:rotate(90deg); }
+.mbody { padding:0 4px 28px; }
+.msub { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:var(--clay); margin:28px 0 6px; }
+.mcap { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); margin:18px 0 6px; }
+.mwrap { overflow-x:auto; }
+table.m { width:100%; border-collapse:collapse; font-size:14px; }
+table.m th { text-align:left; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11px; font-weight:500; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); padding:8px 16px 8px 0; border-bottom:1px solid var(--line); white-space:nowrap; }
+table.m td { padding:10px 16px 10px 0; border-bottom:1px solid var(--line); vertical-align:top; word-break:break-word; }
+table.m td:last-child, table.m th:last-child { padding-right:0; }
+table.m td.val { font-family:'JetBrains Mono',ui-monospace,monospace; white-space:nowrap; }
+table.m td.note { color:var(--muted); font-size:13px; }
+/* Value tables share one grid across every category, so the columns read down
+   the page instead of re-sizing themselves per section. */
+table.mv { table-layout:fixed; min-width:520px; }
+table.mv th:first-child, table.mv td:first-child { width:34%; }
+table.mv th:nth-child(2), table.mv td.val { width:22%; }
+.mdot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:9px; vertical-align:1px; background:var(--line-strong); }
+.mdot.v-ok { background:var(--pass); }
+.mdot.v-warn { background:var(--warn); }
+.mdot.v-bad { background:var(--fail); }
+.mdot.v-missing { background:var(--info); }
 footer { margin-top:80px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-family:'JetBrains Mono',ui-monospace,monospace; font-size:12px; }
 footer a { color:var(--muted); text-decoration:none; }
 footer a:hover { color:var(--clay); }
@@ -246,6 +350,7 @@ footer a:hover { color:var(--clay); }
   <div class="meta">${r.pagesScanned} page(s) scanned &middot; ${esc(r.generatedAt)}</div>
 </header>
 ${sections}
+${measurements}
 <footer>
   <a href="https://abdulkadersafi.com">abdulkadersafi.com</a>
   <span>${r.pagesScanned} page(s)</span>
@@ -316,6 +421,51 @@ ${pages}
   </summary>
   ${body}
     </details>`;
+}
+
+function renderPageMetrics(url: string, metrics: Metric[], open: boolean): string {
+  const groups = groupMetrics(metrics)
+    .map(([cat, ms]) => {
+      const values = ms.filter(isValue);
+      const valueTable = values.length
+        ? `<div class="mwrap"><table class="m mv">
+  <tr><th>Metric</th><th>Value</th><th>Note</th></tr>
+${values.map(renderValueRow).join("\n")}
+</table></div>`
+        : "";
+      const tables = ms.filter(isTable).map(renderMetricTable).join("\n");
+      return `<div class="msub">${esc(CAT_NAMES[cat] || cat)}</div>
+${valueTable}
+${tables}`;
+    })
+    .join("\n");
+
+  return `  <details class="mpage"${open ? " open" : ""}>
+    <summary>
+      <span class="mdot"></span>
+      <span class="u">${esc(url)}</span>
+      <span class="chev">&rsaquo;</span>
+    </summary>
+    <div class="mbody">
+${groups}
+    </div>
+  </details>`;
+}
+
+function renderValueRow(m: MetricValue): string {
+  const dot = m.status ? `mdot v-${m.status}` : "mdot";
+  return `  <tr><td>${esc(m.label)}</td><td class="val"><span class="${dot}"></span>${esc(formatValue(m))}</td><td class="note">${esc(m.note ?? "")}</td></tr>`;
+}
+
+function renderMetricTable(t: MetricTable): string {
+  const caption = `${esc(t.label)}${rowCaption(t)}`;
+  if (t.rows.length === 0)
+    return `<div class="mcap">${caption}</div><p class="ok">None found.</p>`;
+  return `<div class="mcap">${caption}</div>
+<div class="mwrap"><table class="m">
+  <tr>${t.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>
+${t.rows.map((row) => `  <tr>${row.map((c) => `<td>${esc(String(c))}</td>`).join("")}</tr>`).join("\n")}
+</table></div>`;
 }
 
 function esc(s: string): string {

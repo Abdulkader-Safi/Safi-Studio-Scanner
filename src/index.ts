@@ -17,6 +17,7 @@ import type { AuditOptions, AuditReport } from "./types.js";
 
 export { audit, DEFAULTS, render };
 export { allRules, selectRules } from "./rules/index.js";
+export { allCollectors, value, table, inRange, upTo, clip, ROW_CAP } from "./metrics/index.js";
 export type {
   AuditOptions,
   AuditReport,
@@ -28,6 +29,13 @@ export type {
   RuleContext,
   PageContext,
   SiteContext,
+  Collector,
+  Metric,
+  MetricValue,
+  MetricTable,
+  MetricInput,
+  MetricCell,
+  ValueStatus,
   Format,
   Status,
   Severity,

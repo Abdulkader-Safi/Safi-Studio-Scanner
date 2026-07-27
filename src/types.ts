@@ -20,6 +20,10 @@ export interface AuditOptions {
   // key and is rate-limited, so it only runs on the first `psiMaxPages` pages.
   psiKey?: string;
   psiMaxPages: number;
+  // Registry overrides. Left unset, the built-in sets run. Pass an array to add
+  // your own rules or collectors, or to run a subset of the built-ins.
+  rules?: Rule[];
+  collectors?: Collector[];
 }
 
 export interface RawResponse {
@@ -152,11 +156,56 @@ export interface Finding extends RuleResult {
   fix?: string;
 }
 
+// ---- Measurements ----
+//
+// A finding answers "did this page satisfy the check". A metric answers "what is
+// the number". They are separate channels on purpose: a measurement carries its
+// own verdict through ValueStatus and never touches the score, so reporting a
+// value does not mean inventing a rule to hang it on.
+
+export type ValueStatus = "ok" | "warn" | "bad" | "missing";
+export type MetricCell = string | number;
+
+interface MetricBase {
+  id: string;
+  category: string;
+  label: string;
+  status?: ValueStatus;
+  note?: string;
+}
+
+export interface MetricValue extends MetricBase {
+  kind: "value";
+  value: string | number | null;
+  unit?: string;
+}
+
+export interface MetricTable extends MetricBase {
+  kind: "table";
+  columns: string[];
+  /** Capped. `total` is how many rows there were before the cap. */
+  rows: MetricCell[][];
+  total: number;
+}
+
+export type Metric = MetricValue | MetricTable;
+
+/** What a collector returns. The runner stamps the category from the collector. */
+export type MetricInput = Omit<MetricValue, "category"> | Omit<MetricTable, "category">;
+
+export interface Collector {
+  id: string;
+  category: string;
+  requiresBrowser?: boolean;
+  collect(ctx: RuleContext): MetricInput[] | Promise<MetricInput[]>;
+}
+
 export interface PageReport {
   url: string;
   status: number;
   score: number;
   findings: Finding[];
+  metrics: Metric[];
 }
 export interface CategoryScore {
   category: string;

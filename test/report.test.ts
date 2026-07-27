@@ -33,6 +33,27 @@ const report: AuditReport = {
           fix: "Add the Strict-Transport-Security header to enforce HTTPS.",
         },
       ],
+      metrics: [
+        {
+          kind: "value",
+          id: "core-seo/title-chars",
+          category: "core-seo",
+          label: "Title length",
+          value: 49,
+          unit: "chars",
+          status: "ok",
+          note: "Recommended 30 to 60",
+        },
+        {
+          kind: "table",
+          id: "links/duplicate",
+          category: "links",
+          label: "Duplicate link targets",
+          columns: ["URL", "Anchors", "Count"],
+          rows: [["https://example.com/a", "About, About us", 2]],
+          total: 9,
+        },
+      ],
     },
   ],
 };
@@ -56,4 +77,20 @@ test("html render is a self-contained themed document", () => {
   assert.match(out, /data-theme/, "html should support theme switching");
   assert.match(out, /<details class="row/, "issues should render as expandable rows");
   assert.match(out, /How to fix/, "failing rules should show remediation text");
+});
+
+test("metrics render in every format", () => {
+  const json = JSON.parse(render(report, "json"));
+  assert.equal(json.pages[0].metrics.length, 2);
+
+  const md = render(report, "md");
+  assert.match(md, /## Measurements for https:\/\/example\.com\//);
+  assert.match(md, /\| Title length \| 49 chars \| ok \|/);
+  assert.match(md, /showing 1 of 9/, "a capped table declares how much it dropped");
+
+  const html = render(report, "html");
+  assert.match(html, /Measurements/);
+  assert.match(html, /Title length/);
+  assert.match(html, /mdot v-ok/, "a value carries its status as a colour");
+  assert.match(html, /showing 1 of 9/);
 });

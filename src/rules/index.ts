@@ -33,7 +33,12 @@ export const allRules: Rule[] = [
   ...performanceRules,
 ];
 
-export function selectRules(rules: Rule[], only?: string[], skip?: string[]): Rule[] {
+/** Category filter, shared by rules and metric collectors. */
+export function selectRules<T extends { category: string }>(
+  rules: T[],
+  only?: string[],
+  skip?: string[],
+): T[] {
   let out = rules;
   if (only?.length) out = out.filter((r) => only.includes(r.category));
   if (skip?.length) out = out.filter((r) => !skip.includes(r.category));

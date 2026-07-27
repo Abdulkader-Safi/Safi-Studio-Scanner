@@ -26,6 +26,46 @@ test("audit() returns a structured report through the SDK", async () => {
     assert.equal(report.pagesScanned, 1);
     assert.ok(report.categories.length > 0);
     assert.ok(report.pages[0].findings.length > 0);
+    assert.ok(report.pages[0].metrics.length > 0, "measurements ship with every page");
+  } finally {
+    server.close();
+  }
+});
+
+test("audit() accepts custom rule and collector registries", async () => {
+  const server = serve(PAGE);
+  await new Promise<void>((r) => server.listen(0, r));
+  const port = (server.address() as { port: number }).port;
+  try {
+    const report = await audit(`http://127.0.0.1:${port}/`, {
+      maxPages: 1,
+      rules: [
+        {
+          id: "brand/favicon",
+          category: "brand",
+          title: "Favicon declared",
+          severity: "warning",
+          run: () => [{ status: "fail" as const, message: "No favicon link in the head." }],
+        },
+      ],
+      collectors: [
+        {
+          id: "brand/counts",
+          category: "brand",
+          collect: ({ page }) => [
+            { kind: "value" as const, id: "brand/links", label: "Links", value: page.links.length },
+          ],
+        },
+      ],
+    });
+    assert.deepEqual(
+      report.pages[0].findings.map((f) => f.ruleId),
+      ["brand/favicon"],
+    );
+    assert.deepEqual(
+      report.pages[0].metrics.map((m) => m.id),
+      ["brand/links"],
+    );
   } finally {
     server.close();
   }

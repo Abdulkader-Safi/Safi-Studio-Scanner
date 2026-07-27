@@ -32,7 +32,7 @@ interface CategoryScore {
 }
 ```
 
-A page entry carries its findings:
+A page entry carries two channels:
 
 ```ts
 interface PageReport {
@@ -40,7 +40,58 @@ interface PageReport {
   status: number;     // HTTP status
   score: number;      // 0-100 for this page
   findings: Finding[];
+  metrics: Metric[];
 }
+```
+
+## Findings and measurements
+
+A finding is a verdict: the check ran, and the page passed or it did not. A measurement is a number: the title is 82 characters, the page is 340KB, these 14 URLs are linked more than once.
+
+They are separate because they answer different questions, and because forcing a number through a finding means inventing a rule to hang it on. A measurement carries its own verdict instead:
+
+```ts
+type ValueStatus = "ok" | "warn" | "bad" | "missing";
+```
+
+`ValueStatus` never touches the score. Nothing in `metrics` can move the number, so a report can carry as much detail as it likes without diluting what a failing rule means.
+
+Measurements come in two shapes.
+
+```ts
+// A value.
+{
+  kind: "value",
+  id: "core-seo/title-chars",
+  category: "core-seo",
+  label: "Title length",
+  value: 82,
+  unit: "chars",
+  status: "warn",
+  note: "Recommended 30 to 60",
+}
+
+// A table.
+{
+  kind: "table",
+  id: "links/duplicate",
+  category: "links",
+  label: "Duplicate link targets",
+  columns: ["URL", "Anchors", "Count"],
+  rows: [["https://example.com/pricing", "Pricing, See pricing", 4]],
+  total: 340,
+}
+```
+
+Tables are capped at 25 rows so a report stays readable. `total` is the count before the cap, and every format prints "showing 25 of 340" rather than quietly truncating.
+
+Reading them back:
+
+```ts
+const titles = report.pages.map((p) => ({
+  url: p.url,
+  chars: p.metrics.find((m) => m.id === "core-seo/title-chars"),
+}));
 ```
 
 ## Rendering
@@ -57,11 +108,13 @@ const json = render(report, "json");
 
 `render` is synchronous and takes a report you already have, so you can audit once and emit all three.
 
-**HTML** is one self-contained file. Inline styles, no external requests, no fonts to load. It is the format to hand to someone who will not read JSON.
+**HTML** is one self-contained file. Inline styles, no external requests, no fonts to load. It is the format to hand to someone who will not read JSON. Findings are grouped by category and rule; measurements sit under their own section, one block per page.
 
-**Markdown** is per-category headings with a findings table and the score summary. Good for pasting into an issue or a pull request comment.
+**Markdown** is per-category headings with a findings table and the score summary, then a measurements section per page. Good for pasting into an issue or a pull request comment.
 
-**JSON** is the report object, stringified. For pipelines, dashboards, and diffing one run against the next.
+**JSON** is the report object, stringified, findings and measurements both. For pipelines, dashboards, and diffing one run against the next.
+
+The 25-row cap is applied when the measurement is collected, not when it is rendered, so it holds in JSON too. It keeps a twenty-page crawl from turning into a report nobody can open.
 
 ## How the score is calculated
 

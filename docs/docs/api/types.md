@@ -17,9 +17,12 @@ import type { AuditReport, Finding, Rule } from "safi-studio-scanner";
 type Format = "json" | "md" | "html";
 type Status = "pass" | "fail" | "warn" | "info";
 type Severity = "error" | "warning" | "info";
+type ValueStatus = "ok" | "warn" | "bad" | "missing";
 ```
 
 `Status` is the outcome of one check. `Severity` is how much that outcome counts. A rule declares its severity once; each finding reports its own status.
+
+`ValueStatus` is the separate verdict a measurement carries. It never touches the score, which is why a metric can say "this title is 82 characters" without a rule failing over it.
 
 ## AuditOptions
 
@@ -37,10 +40,14 @@ interface AuditOptions {
   browser: boolean;
   psiKey?: string;
   psiMaxPages: number;
+  rules?: Rule[];
+  collectors?: Collector[];
 }
 ```
 
 `audit()` takes a `Partial<AuditOptions>` and fills the gaps from `DEFAULTS`. See [configuration](/guide/start/configuration) for what each one does.
+
+`rules` and `collectors` replace the built-in registries when set. Leave them out and `allRules` and `allCollectors` run.
 
 ## AuditReport
 
@@ -79,8 +86,11 @@ interface PageReport {
   status: number;
   score: number;
   findings: Finding[];
+  metrics: Metric[];
 }
 ```
+
+Two channels. `findings` are verdicts and they move the score. `metrics` are measurements and they never do.
 
 ## Finding
 
@@ -127,6 +137,55 @@ interface Rule {
 ```
 
 See [writing a rule](/guide/using/custom-rules).
+
+## Metric
+
+A measurement is either one value or one table.
+
+```ts
+type Metric = MetricValue | MetricTable;
+type MetricCell = string | number;
+
+interface MetricValue {
+  kind: "value";
+  id: string;              // "core-seo/title-chars"
+  category: string;
+  label: string;           // "Title length"
+  value: string | number | null;   // null means it was not there
+  unit?: string;           // "chars", "KB", "ms"
+  status?: ValueStatus;
+  note?: string;           // "Recommended 30 to 60"
+}
+
+interface MetricTable {
+  kind: "table";
+  id: string;
+  category: string;
+  label: string;
+  columns: string[];
+  rows: MetricCell[][];    // capped
+  total: number;           // rows before the cap
+  status?: ValueStatus;
+  note?: string;
+}
+```
+
+`rows.length < total` means the table was capped, and every renderer prints "showing 25 of 340" rather than pretending it showed everything.
+
+## Collector
+
+```ts
+interface Collector {
+  id: string;
+  category: string;
+  requiresBrowser?: boolean;
+  collect(ctx: RuleContext): MetricInput[] | Promise<MetricInput[]>;
+}
+
+type MetricInput = Omit<MetricValue, "category"> | Omit<MetricTable, "category">;
+```
+
+A collector reads the same `RuleContext` a rule does and returns measurements instead of verdicts. The runner stamps the collector's category onto everything it returns. See [writing a collector](/guide/using/custom-rules#writing-a-collector).
 
 ## RuleContext
 

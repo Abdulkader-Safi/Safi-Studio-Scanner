@@ -4,6 +4,8 @@ import type {
   PageContext,
   SiteContext,
   Finding,
+  Collector,
+  Metric,
   PageReport,
   AuditReport,
   CategoryScore,
@@ -20,6 +22,7 @@ export async function runPage(
   site: SiteContext,
   rules: Rule[],
   checkUrl: (url: string) => Promise<LinkStatus>,
+  collectors: Collector[] = [],
 ): Promise<PageReport> {
   const ctx: RuleContext = { page, site, checkUrl };
   const findings: Finding[] = [];
@@ -43,7 +46,36 @@ export async function runPage(
       });
     }
   }
-  return { url: page.url, status: page.status, score: scoreFindings(findings), findings };
+  return {
+    url: page.url,
+    status: page.status,
+    score: scoreFindings(findings),
+    findings,
+    metrics: await collectPage(ctx, collectors),
+  };
+}
+
+async function collectPage(ctx: RuleContext, collectors: Collector[]): Promise<Metric[]> {
+  const metrics: Metric[] = [];
+  for (const c of collectors) {
+    if (c.requiresBrowser && !ctx.page.browser) continue;
+    try {
+      for (const m of await c.collect(ctx)) metrics.push({ ...m, category: c.category } as Metric);
+    } catch (err) {
+      // A broken collector reports itself as a missing value rather than sinking
+      // the page. Metrics never score, so this cannot move the number.
+      metrics.push({
+        kind: "value",
+        id: c.id,
+        category: c.category,
+        label: c.id,
+        value: null,
+        status: "missing",
+        note: `Collector errored: ${(err as Error).message}`,
+      });
+    }
+  }
+  return metrics;
 }
 
 export function scoreFindings(findings: Finding[]): number {

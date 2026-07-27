@@ -119,16 +119,74 @@ That is how the accessibility rule turns one axe-core run into a finding per vio
 
 ## Running your rules
 
+Pass a `rules` array and it replaces the built-in registry, so add to `allRules` rather than starting from nothing.
+
 ```ts
 import { audit, allRules } from "safi-studio-scanner";
 import { faviconRule } from "./rules/favicon.js";
 
-const rules = [...allRules, faviconRule];
+const report = await audit("https://example.com", {
+  rules: [...allRules, faviconRule],
+});
 ```
 
-:::warning Custom registries are not wired up yet
-`audit()` reads the built-in registry directly; there is no `rules` option to pass your own array in. Today the way to run a custom rule is to fork, or to call the rule yourself against a context you built. A public `rules` option is [phase 1 work](/roadmap/#phase-1-report-foundation-and-free-measurements) on the roadmap, alongside the report shape changes.
-:::
+`only` and `skip` still apply on top, so a custom rule in a new category can be filtered like any other.
+
+```ts
+await audit("https://example.com", {
+  rules: [...allRules, faviconRule],
+  only: ["brand", "core-seo"],
+});
+```
+
+## Writing a collector
+
+A rule answers "did the page satisfy this". A collector answers "what is the number". It reads the same context and returns measurements, which never touch the score.
+
+```ts
+interface Collector {
+  id: string;
+  category: string;
+  requiresBrowser?: boolean;
+  collect(ctx: RuleContext): MetricInput[] | Promise<MetricInput[]>;
+}
+```
+
+```ts
+import type { Collector } from "safi-studio-scanner";
+import { value, table } from "safi-studio-scanner";
+
+export const brandCollector: Collector = {
+  id: "brand/marks",
+  category: "brand",
+  collect({ page }) {
+    const icons = page.$('link[rel~="icon"]').toArray();
+    return [
+      value("brand/icon-count", "Declared icons", icons.length, {
+        status: icons.length > 0 ? "ok" : "missing",
+      }),
+      table(
+        "brand/icons",
+        "Icon declarations",
+        ["href", "sizes"],
+        icons.map((el) => [page.$(el).attr("href") ?? "", page.$(el).attr("sizes") ?? "—"]),
+      ),
+    ];
+  },
+};
+```
+
+`value` and `table` are exported helpers. `table` applies the 25-row cap and records the true total, so the renderer can say "showing 25 of 340". Run them the same way as rules:
+
+```ts
+import { audit, allCollectors } from "safi-studio-scanner";
+
+await audit("https://example.com", {
+  collectors: [...allCollectors, brandCollector],
+});
+```
+
+A collector that throws is reported as a missing value on that page rather than taking the page down with it. Nothing it returns can move the score, so a noisy collector is a cosmetic problem, never a scoring one.
 
 ## Rules that need a rendered page
 

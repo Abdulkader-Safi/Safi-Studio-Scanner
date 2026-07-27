@@ -4,6 +4,7 @@ import { renderPages } from "./providers/playwright.js";
 import { pageSpeedInsights } from "./providers/psi.js";
 import { runPage, aggregate } from "./runner.js";
 import { allRules, selectRules } from "./rules/index.js";
+import { allCollectors } from "./metrics/index.js";
 import type { AuditOptions, AuditReport, SiteContext } from "./types.js";
 
 export const DEFAULTS: AuditOptions = {
@@ -49,7 +50,10 @@ export async function audit(
     for (const p of pages) p.browser = psi.get(p.finalUrl);
   }
 
-  const rules = selectRules(allRules, opts.only, opts.skip);
-  const reports = await Promise.all(pages.map((p) => runPage(p, site, rules, checkUrl)));
+  const rules = selectRules(opts.rules ?? allRules, opts.only, opts.skip);
+  const collectors = selectRules(opts.collectors ?? allCollectors, opts.only, opts.skip);
+  const reports = await Promise.all(
+    pages.map((p) => runPage(p, site, rules, checkUrl, collectors)),
+  );
   return aggregate(startUrl, new Date().toISOString(), reports);
 }
