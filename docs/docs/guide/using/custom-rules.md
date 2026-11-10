@@ -188,6 +188,31 @@ await audit("https://example.com", {
 
 A collector that throws is reported as a missing value on that page rather than taking the page down with it. Nothing it returns can move the score, so a noisy collector is a cosmetic problem, never a scoring one.
 
+## Reading the page's text
+
+Counting words yourself with `page.$("body").text()` picks up the nav, the footer and hidden elements, and your numbers will disagree with the report's. Call `analyzeText(page)` instead. It reads the main content once per page and caches the result, so calling it from ten rules costs the same as calling it from one.
+
+```ts
+import { analyzeText, readability, type Rule } from "safi-studio-scanner";
+
+export const plainEnglish: Rule = {
+  id: "brand/plain-english",
+  category: "content",
+  title: "Plain English",
+  severity: "info",
+  fix: "Shorten sentences and swap long words for short ones.",
+  run({ page }) {
+    const scores = readability(analyzeText(page));
+    if (!scores) return [{ status: "info", message: "Not English, readability skipped" }];
+    return scores.fleschKincaidGrade > 10
+      ? [{ status: "warn", message: `Reads at grade ${scores.fleschKincaidGrade}` }]
+      : [{ status: "pass", message: `Reads at grade ${scores.fleschKincaidGrade}` }];
+  },
+};
+```
+
+The analysis gives you `words`, `sentences`, `uniqueWords`, `stopWords`, and `ngrams[1]`, `ngrams[2]` and `ngrams[3]`, each a list of `{ phrase, key, count, percent }`. The [API reference](/api/#text-analysis) lists the rest.
+
 ## Rules that need a rendered page
 
 Set `requiresBrowser: true` and the runner skips the rule unless that page carries browser data. It is skipped, not failed, so a static run is never penalised for what it could not measure.

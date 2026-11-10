@@ -7,6 +7,8 @@ description: What Safi Studio Scanner is, what it checks, and how the audit pipe
 
 Safi Studio Scanner is a website audit engine for Node.js, written in TypeScript. You give it a URL. It crawls the site, runs 94 checks against every page it finds, scores the results, and returns one report.
 
+Beside the verdicts, each page gets measurements: title and description lengths, link tables, the heading outline, and since 1.1.0 a read of the text itself. That covers readability scores, the most repeated words and phrases, and whether the top keywords appear in the title, description and H1.
+
 It ships as a library, not a command line tool. There is no binary to install globally and no config file to maintain. You import a function, call it, and get an object back.
 
 ```ts
