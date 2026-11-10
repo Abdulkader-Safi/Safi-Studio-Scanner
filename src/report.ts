@@ -146,9 +146,8 @@ const CAT_ORDER = [
 ];
 const STATUS_RANK: Record<Status, number> = { fail: 0, warn: 1, info: 2, pass: 3 };
 
+const AUTHOR_URL = "https://abdulkadersafi.com";
 const FOOTER_LINKS = [
-  { label: "abdulkadersafi.com", href: "https://abdulkadersafi.com" },
-  { label: "safi-studio.com", href: "https://safi-studio.com" },
   { label: "GitHub", href: "https://github.com/Abdulkader-Safi/Safi-Studio-Scanner" },
   { label: "npm", href: "https://www.npmjs.com/package/safi-studio-scanner" },
 ];
@@ -392,6 +391,7 @@ footer .flead { font-size:13px; color:var(--muted-light); margin:0 0 26px; }
 footer .flinks { display:flex; flex-wrap:wrap; justify-content:center; gap:12px 32px; }
 footer a { font-size:13px; font-weight:500; color:var(--body-light); text-decoration:none; }
 footer a:hover { color:var(--ink-dark); }
+footer .colophon a { font-size:inherit; font-weight:inherit; color:inherit; text-decoration:underline; text-underline-offset:3px; }
 </style>
 </head>
 <body>
@@ -408,7 +408,7 @@ ${measurements}
 </div>
 <footer>
   <div class="finner">
-    <p class="colophon">MIT licensed. Built by Abdulkader Safi.</p>
+    <p class="colophon">MIT licensed. Built by <a href="${esc(tagged(AUTHOR_URL))}" rel="noopener">Abdulkader Safi</a>.</p>
     <p class="flead">Safi Studio Scanner, the website audit engine for Node.js.</p>
     <nav class="flinks">
 ${FOOTER_LINKS.map((l) => `      <a href="${esc(tagged(l.href))}" rel="noopener">${esc(l.label)}</a>`).join("\n")}

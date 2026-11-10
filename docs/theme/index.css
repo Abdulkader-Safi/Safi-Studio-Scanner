@@ -847,6 +847,7 @@ input::placeholder {
   gap: var(--sc-lg);
 }
 
+.sc-colophon__line a,
 .sc-colophon__links a {
   color: #474d57;
   text-decoration: none;
