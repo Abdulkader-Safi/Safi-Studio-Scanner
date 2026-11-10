@@ -5,7 +5,7 @@ description: What ships today, what is being built next, and the eleven phases p
 
 # Roadmap
 
-Eleven phases, ordered so each one unlocks the next. Phase 0 and phase 1 are what you can install today. Nothing beyond them is in the published package yet.
+Eleven phases, ordered so each one unlocks the next. Phases 0 to 2 are what you can install today. Nothing beyond them is in the published package yet.
 
 | Stage | Status |
 | --- | --- |
@@ -84,7 +84,7 @@ Everything already sitting in the parsed DOM is now harvested. All of it is in t
 
 ## Phase 2: Text, keyword, and readability engine
 
-<p className="sc-phase sc-phase--done">Built · ships in the next release</p>
+<p className="sc-phase sc-phase--done">Shipped in 1.1.0</p>
 
 One module that pays for four report sections. All of it is in the [measurement catalog](/guide/using/measurements#text-and-keywords).
 
