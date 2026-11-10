@@ -51,7 +51,7 @@ export default defineConfig({
       },
     ],
     footer: {
-      message: 'MIT licensed. Built by Abdulkader Safi.',
+      message: 'MIT licensed. Built by <a href="https://abdulkadersafi.com/?utm_source=scanner-docs&utm_medium=referral&utm_campaign=safi-studio-scanner">Abdulkader Safi</a>.',
     },
   },
 });

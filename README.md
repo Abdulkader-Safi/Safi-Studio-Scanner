@@ -1,8 +1,8 @@
 # Safi Studio Scanner
 
-A Node.js website audit package, written in TypeScript. Point it at a URL from your own code, and it crawls the site, audits each page against a large set of quality rules, and returns a report you can render as HTML, Markdown, or JSON.
+A website audit package for Node.js, written in TypeScript. Give it a URL and it crawls the site, checks each page against 94 rules in 15 categories, and returns a scored report you can render as HTML, Markdown or JSON.
 
-It runs 94 checks across 15 categories. The audit engine is a library: import it, call `audit()`, and get back a scored report.
+It is a library. Import it, call `audit()`, get a report back.
 
 ## Install
 
@@ -10,18 +10,18 @@ It runs 94 checks across 15 categories. The audit engine is a library: import it
 npm install safi-studio-scanner
 ```
 
-Node 18 or newer is required. The core install has one dependency (cheerio), so it stays small. Accessibility and Core Web Vitals are optional and come two ways:
+You need Node 18 or newer. The core install has one dependency, cheerio.
 
-- **Local browser** (`browser: true`): install Playwright and Chromium.
+Accessibility and Core Web Vitals need a rendered page, and there are two ways to get one. With `browser: true` the scanner drives a local headless Chromium, which needs Playwright:
 
-  ```bash
-  npm i playwright @axe-core/playwright
-  npx playwright install chromium
-  ```
+```bash
+npm i playwright @axe-core/playwright
+npx playwright install chromium
+```
 
-- **No browser** (`psiKey`): use Google PageSpeed Insights. No install, just an API key from the Google Cloud console. It runs Lighthouse on Google's side and returns Core Web Vitals and accessibility over HTTPS. It is rate-limited, so it only runs on the first `psiMaxPages` pages.
+With `psiKey` it asks Google PageSpeed Insights instead. Nothing to install, only an API key from the Google Cloud console. Google runs Lighthouse and sends back Core Web Vitals and accessibility results. The API is rate-limited, so only the first `psiMaxPages` pages go to it.
 
-`playwright` and `@axe-core/playwright` are optional and lazy-loaded, so a project that never sets `browser: true` never pays for Chromium.
+Playwright is optional and loads lazily. A project that never sets `browser: true` never downloads Chromium.
 
 ## Usage
 
@@ -44,7 +44,7 @@ const score = await auditScore("https://example.com"); // just the 0-100 number
 
 ### Watching it run
 
-A twenty-page crawl takes half a minute, and `audit()` says nothing until it is done. `auditStream()` runs the same audit and reports progress as it goes.
+A twenty-page crawl takes about half a minute, and `audit()` is silent until it finishes. `auditStream()` runs the same audit and reports progress as it goes.
 
 ```ts
 import { auditStream } from "safi-studio-scanner";
@@ -66,62 +66,75 @@ const report = await stream.finalReport();
 3/20  https://example.com/about      92/100
 ```
 
-Every event has a `type`: `audit_start`, `page_fetched`, `crawl_complete`, `render_complete`, `check_complete`, `page_complete`, `audit_complete`. Switch on it in the loop, or subscribe with `.on("page_complete", handler)`. `check_complete` carries `checksDone` and `checksTotal` for a progress bar. The last event carries the report, and `finalReport()` returns the same object.
+Every event has a `type`: `audit_start`, `page_fetched`, `crawl_complete`, `render_complete`, `check_complete`, `page_complete` or `audit_complete`. Switch on it in the loop, or subscribe with `.on("page_complete", handler)`. `check_complete` carries `checksDone` and `checksTotal` for a progress bar. The last event carries the report, and `finalReport()` returns the same object.
 
-Run `npm run example` for a working terminal progress bar. Full details in [streaming progress](https://safi-studio-scanner.abdulkadersafi.com/guide/using/streaming).
+`npm run example` shows a working terminal progress bar. The [streaming guide](https://safi-studio-scanner.abdulkadersafi.com/guide/using/streaming) has the details.
 
-Exported functions: `audit`, `auditStream`, `auditToHtml`, `auditToMarkdown`, `auditScore`, and `render` (for turning a report into any format). `allRules`, `allCollectors`, `selectRules`, and the collector helpers `value` and `table` are exported too, and every type (`AuditReport`, `Finding`, `Rule`, `Metric`, ...). The package is ESM.
+### What it exports
+
+- `audit`, `auditStream`, `auditToHtml`, `auditToMarkdown`, `auditScore`, and `render` for turning a report into any format.
+- `allRules`, `allCollectors` and `selectRules`, plus `value` and `table` for writing collectors.
+- The text module: `analyzeText`, `readability`, `tokenize`, `lemma` and `keywordSpans`. Custom rules can count words exactly as the built-in ones do.
+- Every type: `AuditReport`, `Finding`, `Rule`, `Metric`, `TextAnalysis` and the rest.
+
+The package is ESM only.
 
 ### Options
 
-| Option        | Description                                                                   | Default          |
-| ------------- | ---------------------------------------------------------------------------- | ---------------- |
-| `only`        | Array of categories to include                                                | all              |
-| `skip`        | Array of categories to skip                                                   | none             |
-| `maxPages`    | Max pages to crawl                                                            | `20`             |
-| `concurrency` | Pages fetched at once                                                         | `5`              |
-| `maxDepth`    | Max crawl depth                                                               | `3`              |
-| `browser`     | Render pages in headless Chromium to run accessibility and performance rules  | `false`          |
-| `psiKey`      | Use Google PageSpeed Insights for CWV and accessibility (no local browser)    | off              |
-| `psiMaxPages` | How many pages to send to PageSpeed Insights                                  | `5`              |
-| `timeout`     | Per-request timeout in ms                                                     | `15000`          |
-| `userAgent`   | Override the request user agent                                               | default          |
-| `rules`       | Replace the rule registry. Spread `allRules` in to keep the built-in set      | `allRules`       |
-| `collectors`  | Replace the measurement registry, same way                                    | `allCollectors`  |
+| Option        | Description                                                                  | Default         |
+| ------------- | ---------------------------------------------------------------------------- | --------------- |
+| `only`        | Array of categories to include                                               | all             |
+| `skip`        | Array of categories to skip                                                  | none            |
+| `maxPages`    | Max pages to crawl                                                           | `20`            |
+| `concurrency` | Pages fetched at once                                                        | `5`             |
+| `maxDepth`    | Max crawl depth                                                              | `3`             |
+| `browser`     | Render pages in headless Chromium to run accessibility and performance rules | `false`         |
+| `psiKey`      | Use Google PageSpeed Insights for CWV and accessibility (no local browser)   | off             |
+| `psiMaxPages` | How many pages to send to PageSpeed Insights                                 | `5`             |
+| `timeout`     | Per-request timeout in ms                                                    | `15000`         |
+| `userAgent`   | Override the request user agent                                              | default         |
+| `rules`       | Replace the rule registry. Spread `allRules` in to keep the built-in set     | `allRules`      |
+| `collectors`  | Replace the measurement registry, same way                                   | `allCollectors` |
 
 ## What it checks
 
-It ships 94 rules across 15 categories. The static categories run by default:
+These categories run on the fetched HTML, with no browser:
 
-- **Core SEO**: title, meta description, single H1, H1 length, canonical, charset, viewport, robots meta, Open Graph
-- **Content**: heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language
-- **Links**: broken internal and external links, redirect chains, weak anchor text, missing rel attributes
-- **Images**: missing alt, missing dimensions, non-modern formats, lazy loading, filename quality, empty src
-- **Structured data**: JSON-LD presence and validity, recognized types, Organization/WebSite, breadcrumb, duplicates
-- **Security**: HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, cookies, header disclosure, mixed content
-- **Crawlability**: robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag
-- **URL structure**: lowercase, hyphens not underscores, length, depth, parameters, readable slugs (per Google guidance)
-- **Social media**: Twitter Card, absolute og:image, og:url vs canonical, profile links
-- **Internationalization**: hreflang presence and validity
-- **Legal**: privacy policy, terms, cookie consent, contact
-- **Analytics**: analytics tag present, Google consent mode
-- **E-E-A-T**: author attribution, dates, outbound citations, about page
-- **Performance**: render-blocking scripts, stylesheet count, inline script size, HTML weight
+| Category             | Checks                                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| Core SEO             | Title, meta description, single H1, H1 length, canonical, charset, viewport, robots meta, Open Graph     |
+| Content              | Heading hierarchy, word count, empty headings, keyword stuffing, text-to-HTML ratio, language            |
+| Links                | Broken internal and external links, redirect chains, weak anchor text, missing rel attributes            |
+| Images               | Missing alt, missing dimensions, old formats, lazy loading, filename quality, empty src                   |
+| Structured data      | JSON-LD presence and validity, recognised types, Organization and WebSite, breadcrumbs, duplicates        |
+| Security             | HTTPS, HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, cookies, mixed content        |
+| Crawlability         | robots.txt, sitemap, noindex conflicts, canonical sanity, X-Robots-Tag                                   |
+| URL structure        | Lowercase, hyphens over underscores, length, depth, parameters, readable slugs                           |
+| Social media         | Twitter Card, absolute og:image, og:url against canonical, profile links                                 |
+| Internationalization | hreflang presence and validity                                                                           |
+| Legal                | Privacy policy, terms, cookie consent, contact                                                           |
+| Analytics            | Analytics tag, Google consent mode                                                                       |
+| E-E-A-T              | Author, dates, outbound citations, about page                                                            |
+| Performance          | Render-blocking scripts, stylesheet count, inline script size, HTML weight                               |
 
-With `browser: true`, it also renders each page in headless Chromium and adds:
+With `browser: true` or `psiKey`, two more run on the rendered page. Accessibility is a full axe-core WCAG pass, one row per check. Performance adds Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight and request count.
 
-- **Accessibility**: full axe-core WCAG audit, one row per check
-- **Performance**: Core Web Vitals (LCP, CLS, TTFB), DOM size, page weight, request count
-
-See [`features.md`](./features.md) for the full rule list and the roadmap.
+[`features.md`](./features.md) has the full rule list and the roadmap.
 
 ## Output
 
-Every run produces a health score out of 100, overall and per category, plus two channels per page.
+Every run scores the site out of 100, overall and per category. Each page then reports on two channels.
 
-**Findings** are verdicts. Each has a status (pass, fail, warn, info), a severity, a message, and the offending markup or header as evidence. They move the score.
+Findings are verdicts. Each one has a status (pass, fail, warn or info), a severity, a message, and the markup or header that caused it. Findings move the score.
 
-**Measurements** are numbers. Title length, HTML size, the heading outline, the full Open Graph table, every URL linked more than once with each anchor used for it. Each carries its own `ok | warn | bad | missing` status and never touches the score, so a report can be detailed without diluting what a failing rule means.
+Measurements are numbers and tables: title length, HTML size, the heading outline, the full Open Graph table, every URL linked more than once with each anchor used for it. Since 1.1.0 they also cover the text itself:
+
+- unique words, stop word share and average sentence length
+- Flesch reading ease, Flesch-Kincaid grade and Gunning Fog
+- the top 1, 2 and 3-word phrases with counts and percentages
+- whether each of the top 10 keywords appears in the title, description and H1
+
+A measurement carries its own `ok`, `warn`, `bad` or `missing` status and never touches the score. A report can go into detail without changing what a failing rule means.
 
 ```ts
 const report = await audit("https://example.com");
@@ -129,26 +142,22 @@ report.pages[0].findings; // verdicts
 report.pages[0].metrics; // values and tables
 ```
 
-- **JSON** for pipelines and CI
-- **Markdown** for pasting into issues and docs
-- **HTML** as one self-contained file, styled in the Scanner brand, with no external requests
+JSON suits pipelines and CI. Markdown pastes into issues and docs. HTML comes out as one self-contained file with no external requests.
 
 ## How it works
 
-A short pipeline, one focused module per stage:
+1. Crawl up to `maxPages` same-origin pages from the start URL, `concurrency` at a time. Fetch `robots.txt` and `sitemap.xml` once.
+2. Build a context object per page, including the parsed DOM, for every rule to read.
+3. Run the rules and collectors against each page.
+4. Score the findings by severity, per page and overall.
+5. Render the report.
 
-1. **Crawl** up to `maxPages` same-origin pages from the start URL, `concurrency` at a time, plus `robots.txt` and `sitemap.xml` once.
-2. **Build a context** object per page that every rule reads from, including a parsed DOM.
-3. **Run the rules and collectors** against each page, collecting findings and measurements.
-4. **Score** the findings by severity, per page and overall.
-5. **Render** the report in the requested format.
+A rule is one file exporting an object with an `id`, `category`, `severity` and a `run(context)` function. A collector has the same shape with `collect(context)`, which returns measurements. Adding either means one new file and one import in the registry.
 
-Each rule is a small module exporting one object with an `id`, `category`, `severity`, and a `run(context)` function. A collector is the same shape with a `collect(context)` that returns measurements instead. Both are collected into a registry, so adding either means dropping a file and adding one import.
+## Releases
 
-## Project status
-
-Early development. See [`PRD.md`](./PRD.md) for the product spec and [`features.md`](./features.md) for the backlog.
+Merging to `main` with a new `version` in `package.json` publishes that version to npm and creates a matching GitHub release. Merges that leave the version alone only run the tests.
 
 ## License
 
-[MIT](./LICENSE). Copyright Abdulkader Safi ([safi-studio.com](https://safi-studio.com)).
+[MIT](./LICENSE). Copyright [Abdulkader Safi](https://abdulkadersafi.com).

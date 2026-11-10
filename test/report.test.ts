@@ -100,12 +100,13 @@ test("metrics render in every format", () => {
 test("html centres its column and closes on a credited footer", () => {
   const out = render(report, "html");
   assert.match(out, /margin:0 auto/, "the measure sits centred at any viewport width");
-  assert.match(out, /MIT licensed\. Built by Abdulkader Safi\./);
-  for (const label of ["abdulkadersafi.com", "safi-studio.com", "GitHub", "npm"])
+  assert.match(out, /MIT licensed\. Built by <a href="https:\/\/abdulkadersafi\.com\/\?[^"]*" rel="noopener">Abdulkader Safi<\/a>\./);
+  assert.ok(!out.includes("safi-studio.com"), "the studio site is no longer credited");
+  for (const label of ["GitHub", "npm"])
     assert.ok(out.includes(`>${label}</a>`), `footer is missing the ${label} link`);
   assert.equal(
     (out.match(/utm_source=safi-studio-scanner/g) ?? []).length,
-    4,
+    3,
     "every footer link carries attribution",
   );
 });
