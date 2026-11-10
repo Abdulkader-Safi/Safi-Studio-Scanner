@@ -103,7 +103,7 @@ This phase was the gate, and it shipped in 1.0.2. Most of the backlog is measure
 - `[done]` Published date and updated date, read from meta tags, JSON-LD, and article tags. (free)
 - `[done]` Character counts returned for title, description, and H1, so a consumer can render "49 characters, recommended 30 to 60". (free)
 - `[done]` H1 length rule with a 10 to 70 target, and H1 count reported as a value. (free)
-- `[partial]` Count of elements hidden with `display:none` is reported. The option to include or exclude them from text analysis lands with the phase 2 text module, which is the thing that would read it. (free)
+- `[done]` Count of elements hidden with `display:none` is reported, and the phase 2 text module excludes them from every text statistic. No option to include them; add one if someone asks. (free)
 
 ## 1.3 Markup Hygiene Counters
 
@@ -146,35 +146,35 @@ This phase was the gate, and it shipped in 1.0.2. Most of the backlog is measure
 
 ## 2.1 The Module
 
-- `[todo]` Tokenizer that respects the page language and strips boilerplate. (module)
-- `[todo]` Stop word lists per language, starting with English. (module)
-- `[todo]` Lemma grouping so "development" and "developments" collapse into one row. (module)
-- `[todo]` N-gram extraction for 1-word, 2-word, and 3-word phrases. (module)
-- `[todo]` Main-content extraction so nav and footer text do not pollute every statistic. (module)
+- `[done]` Tokenizer that respects the page language and strips boilerplate. (module)
+- `[partial]` Stop word lists per language. English ships; other languages get counts and n-grams, and stop word, water, and readability values come back null. (module)
+- `[partial]` Lemma grouping so "development" and "developments" collapse into one row. Plurals and possessives only; "compost" and "composting" stay apart. (module)
+- `[done]` N-gram extraction for 1-word, 2-word, and 3-word phrases. (module)
+- `[done]` Main-content extraction so nav and footer text do not pollute every statistic. (module)
 
 ## 2.2 Text Statistics
 
 - `[done]` Total word count.
 - `[done]` Text-to-HTML ratio.
-- `[todo]` Unique word count and unique percentage. (free after 2.1)
-- `[todo]` Stop word count and percentage. (free after 2.1)
-- `[todo]` Water or redundancy percentage: the share of words carrying no meaning. (free after 2.1)
-- `[todo]` Average sentence length in words. (free after 2.1)
-- `[todo]` Character count excluding spaces. (free)
+- `[done]` Unique word count and unique percentage. (free after 2.1)
+- `[done]` Stop word count and percentage. (free after 2.1)
+- `[done]` Water or redundancy percentage: the share of words carrying no meaning. (free after 2.1)
+- `[done]` Average sentence length in words. (free after 2.1)
+- `[done]` Character count excluding spaces. (free)
 
 ## 2.3 Readability
 
-- `[todo]` Flesch reading ease with a label (Easy, Medium, Difficult). (free after 2.1)
-- `[todo]` Flesch-Kincaid grade level. (free after 2.1)
-- `[todo]` Gunning Fog index. (free after 2.1)
+- `[done]` Flesch reading ease with a label (Easy, Medium, Difficult). (free after 2.1)
+- `[done]` Flesch-Kincaid grade level. (free after 2.1)
+- `[done]` Gunning Fog index. (free after 2.1)
 
 ## 2.4 Keyword Analysis
 
-- `[todo]` Top words table for 1, 2, and 3-word phrases, each with count and percentage. (free after 2.1)
-- `[todo]` Stop word table with per-word count and percentage. (free after 2.1)
-- `[todo]` Top 10 keyword relevance matrix: for each keyword, present or absent in title, description, and H1. (free after 2.1)
-- `[todo]` Keyword highlight markers for title, description, H1, and every heading, so a renderer can mark the matched spans. (free after 2.1)
-- `[partial]` `content/keyword-stuffing` gets rewritten to read the n-gram output instead of doing its own counting.
+- `[done]` Top words table for 1, 2, and 3-word phrases, each with count and percentage. (free after 2.1)
+- `[done]` Stop word table with per-word count and percentage. (free after 2.1)
+- `[done]` Top 10 keyword relevance matrix: for each keyword, present or absent in title, description, and H1. (free after 2.1)
+- `[done]` Keyword highlight markers for title, description, H1, and every heading, so a renderer can mark the matched spans. (free after 2.1)
+- `[done]` `content/keyword-stuffing` reads the n-gram output instead of doing its own counting.
 
 ---
 
