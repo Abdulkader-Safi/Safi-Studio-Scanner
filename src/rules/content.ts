@@ -1,4 +1,8 @@
 import type { Rule } from "../types.js";
+import { analyzeText } from "../text.js";
+
+const MIN_WORDS_FOR_STUFFING = 100;
+const STUFFING_PERCENT = 5;
 
 export const contentRules: Rule[] = [
   {
@@ -62,18 +66,18 @@ export const contentRules: Rule[] = [
     severity: "info",
     fix: "Reduce the repetition of the flagged word and write naturally.",
     run({ page }) {
-      const words = page.$("body").text().toLowerCase().match(/[a-z']{4,}/g) || [];
-      if (words.length < 100)
+      const a = analyzeText(page);
+      if (a.words.length < MIN_WORDS_FOR_STUFFING)
         return [{ status: "pass", message: "Not enough text to flag stuffing" }];
-      const counts = new Map<string, number>();
-      for (const w of words) counts.set(w, (counts.get(w) || 0) + 1);
-      let top = "",
-        topN = 0;
-      for (const [w, n] of counts) if (n > topN) { top = w; topN = n; }
-      const density = topN / words.length;
+      // The n-gram share already weights a phrase by its length, so one ceiling
+      // works for single words and phrases alike.
+      const top = ([1, 2, 3] as const)
+        .map((n) => a.ngrams[n][0])
+        .filter((p) => p !== undefined)
+        .sort((x, y) => y.percent - x.percent)[0];
       return [
-        density > 0.05
-          ? { status: "warn", message: `"${top}" is ${(density * 100).toFixed(1)}% of words` }
+        top && top.percent > STUFFING_PERCENT
+          ? { status: "warn", message: `"${top.phrase}" is ${top.percent}% of words` }
           : { status: "pass", message: "No keyword over-repetition" },
       ];
     },

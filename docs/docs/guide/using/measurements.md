@@ -58,6 +58,38 @@ The outline is the page's table of contents as the parser sees it. A heading's s
 
 Hidden elements are counted from inline styles only. There is no CSS cascade in a static parse, so a class that hides an element in a stylesheet is invisible here.
 
+## Text and keywords
+
+These read the page's main content: `<main>` or `<article>` when there is exactly one, otherwise `<body>` without its top-level header and footer. Navigation, sidebars, forms and scripts are dropped first, along with anything hidden by an inline style or the `hidden` attribute. Words are split with `Intl.Segmenter` in the page's declared language, so Japanese or Thai text splits correctly.
+
+| Metric | Shape | Reports |
+| --- | --- | --- |
+| `content/main-words` | value | Words in the main content. The note says which element it was read from. |
+| `content/unique-words` | value | Distinct words, with plurals merged. |
+| `content/unique-words-percent` | value | The same as a share of all words. |
+| `content/stop-words` | value | Words such as "the" and "of". |
+| `content/stop-words-percent` | value | The same as a share. |
+| `content/water-percent` | value | Stop words plus filler such as "really" and "basically". `ok` up to 60%. |
+| `content/avg-sentence-length` | value | Words per sentence. `ok` up to 20. |
+| `content/chars-no-spaces` | value | Characters of main content, whitespace excluded. |
+| `content/flesch-reading-ease` | value | 0 to 100, higher is easier. The note is `Easy` (60 and up), `Medium`, or `Difficult` (under 30). |
+| `content/flesch-kincaid-grade` | value | US school grade. `ok` up to 9. |
+| `content/gunning-fog` | value | Years of schooling to read it first time. `ok` up to 12. |
+| `content/top-words-1` | table | Single keywords with count and share. |
+| `content/top-words-2` | table | Two-word phrases. |
+| `content/top-words-3` | table | Three-word phrases. |
+| `content/stop-word-table` | table | Each stop word with count and share. |
+| `content/keyword-relevance` | table | The top 10 keywords, each marked `yes` or `no` for the title, description, and H1. |
+| `content/keyword-highlights` | table | Every heading plus the title and description, with the top keywords each contains and their character spans. |
+
+A phrase only makes the tables if it appears at least twice, and it may not open or close on a stop word, so "of the" never ranks but "cost of living" can. A phrase's share counts every word in it: a two-word phrase used 3 times in 100 words is 6%.
+
+Plurals and possessives are merged, so "garden", "gardens", and "garden's" are one row shown under its most common form. Other inflections are not: "compost" and "composting" stay apart.
+
+Spans are `start-end` character offsets into the full, untrimmed text, end exclusive, separated by spaces. `0-6 7-17` on "Garden composting guide" marks "Garden" and "composting".
+
+The stop word counts (water share included) and the readability scores need English. On a page declaring another language they come back `null` with a note saying so, and every other metric still works.
+
 ## Crawlability
 
 | Metric | Shape | Reports |

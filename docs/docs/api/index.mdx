@@ -186,6 +186,35 @@ function table(
 
 The helpers a collector builds its output with. `table` applies the row cap (25 by default) and records the true row count, so a renderer can print "showing 25 of 340". See [writing a collector](/guide/using/custom-rules#writing-a-collector).
 
+## Text analysis
+
+```ts
+function analyzeText(page: PageContext): TextAnalysis;
+function readability(analysis: TextAnalysis): Readability | null;
+function tokenize(text: string, lang?: string): string[];
+function lemma(word: string, lang?: string): string;
+function keywordSpans(text: string, keys: Iterable<string>, lang?: string): [number, number][];
+```
+
+The module behind the [text and keyword measurements](/guide/using/measurements#text-and-keywords). `analyzeText` reads the page's main content once and caches the result per page, so a custom rule or collector can call it for free. It returns the words, sentences, unique and stop word counts, and `ngrams[1|2|3]`, each a list of `{ phrase, key, count, percent }` used at least twice.
+
+`readability` returns Flesch reading ease, Flesch-Kincaid grade and Gunning Fog, or `null` for a page not in English. `keywordSpans` takes lemma keys, such as the `key` of a phrase, and returns where they occur in a string, end exclusive.
+
+```ts
+import { analyzeText, type Rule } from "safi-studio-scanner";
+
+const brandMentioned: Rule = {
+  id: "custom/brand-mentioned",
+  category: "content",
+  title: "Brand mentioned",
+  severity: "info",
+  run({ page }) {
+    const mentioned = analyzeText(page).words.includes("acme");
+    return [{ status: mentioned ? "pass" : "warn", message: mentioned ? "Brand named" : "Brand never named" }];
+  },
+};
+```
+
 ## DEFAULTS
 
 ```ts

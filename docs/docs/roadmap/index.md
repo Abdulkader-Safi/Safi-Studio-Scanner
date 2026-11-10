@@ -84,25 +84,26 @@ Everything already sitting in the parsed DOM is now harvested. All of it is in t
 
 ## Phase 2: Text, keyword, and readability engine
 
-<p className="sc-phase sc-phase--now">Next up</p>
+<p className="sc-phase sc-phase--done">Built · ships in the next release</p>
 
-One module that pays for four report sections.
+One module that pays for four report sections. All of it is in the [measurement catalog](/guide/using/measurements#text-and-keywords).
 
-<div className="sc-list sc-list--planned">
+<div className="sc-list sc-list--done">
 
-- A tokenizer with per-language stop word lists, lemma grouping, and n-gram extraction.
-- Main-content extraction, so nav and footer text stop polluting every statistic.
-- Text statistics: unique words, stop word share, redundancy, average sentence length, characters excluding spaces.
+- A tokenizer built on `Intl.Segmenter` with the page's language, an English stop word list, plural grouping, and 1, 2, and 3-word n-grams.
+- Main-content extraction: `<main>` or `<article>` when the page has one. Navigation, footers, forms and hidden elements are dropped either way.
+- Text statistics: unique words, stop word share, water share, average sentence length, characters excluding spaces.
 - Readability: Flesch reading ease, Flesch-Kincaid grade, Gunning Fog.
-- Top words as 1, 2, and 3-word phrases with counts and percentages.
+- Top words as 1, 2, and 3-word phrases with counts and percentages, plus a stop word table.
 - A keyword relevance matrix: each top keyword present or absent in the title, description, and H1.
-- Keyword highlight markers for headings, so a renderer can mark the matched spans.
+- Keyword highlight spans for the title, description, and every heading.
+- `content/keyword-stuffing` now reads the n-gram output, so stop words no longer trip it and repeated phrases do.
 
 </div>
 
 ## Phase 3: Answer engine and content structure
 
-<p className="sc-phase">Planned · not started</p>
+<p className="sc-phase sc-phase--now">Next up</p>
 
 The part most audit tools do not have, and it runs on a DOM already parsed.
 
